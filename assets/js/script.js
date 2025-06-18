@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Добавляем токен reCAPTCHA
                     formData.append('recaptcha_response', token);
                     // Добавляем время отправки для защиты от спама
-                    formData.append('x-form-submit-time', Date.now() / 1000); 
+                    // formData.append('x-form-submit-time', Date.now() / 1000); // Этот заголовок будет установлен ниже
 
                     // Преобразуем FormData в объект для отправки JSON
                     const data = {};
@@ -360,17 +360,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 form.reset(); // Сбрасываем форму
                             } else {
                                 // Показываем сообщение об ошибке, полученное от сервера
+                                // Вместо alert() можно использовать более красивые модальные окна
+                                // или сообщения на странице.
                                 throw new Error(data.message || 'Произошла неизвестная ошибка на сервере.');
                             }
                         })
                         .catch(error => {
-                            // Отображаем ошибку пользователю
-                            // Вместо alert() можно использовать более красивые модальные окна
-                            // или сообщения на странице.
                             const errorMessage = error.message.includes('Ожидался JSON') 
                                 ? 'Сервер вернул неожиданный ответ. Проверьте логи сервера.' 
                                 : `Ошибка отправки: ${error.message}`;
-                            alert(errorMessage);
+                            alert(errorMessage); // Используем alert по вашему текущему коду
                             console.error('Ошибка отправки формы:', error);
                         })
                         .finally(() => {
