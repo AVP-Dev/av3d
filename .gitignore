@@ -1,0 +1,60 @@
+# --- Логи и временные файлы ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+/form_submissions.log # Лог-файл из старого PHP проекта
+
+# --- Зависимости Node.js ---
+# Эту папку всегда нужно игнорировать
+node_modules/
+
+# --- Переменные окружения ---
+# Содержат секретные ключи и токены. Никогда не добавляйте их в Git.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.secret
+
+# --- Артефакты сборки и деплоя ---
+# Папки, генерируемые системами сборки или хостингом (Coolify)
+dist/
+build/
+.coolify/
+artifacts/
+
+# --- Пакеты и архивы ---
+*.tgz
+*.zip
+*.rar
+
+# --- Файлы операционных систем ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.[Dd]esktop.ini
+
+# --- Файлы IDE и редакторов ---
+.idea/ # IntelliJ IDEA
+.vscode/ # Visual Studio Code
+*.sublime-project
+*.sublime-workspace
+
+# --- Остатки от старых систем (PHP) ---
+# Резервные копии и временные файлы, которые могут остаться
+*.php~
+*.bak
+*.old
+*.tmp
+# Раскомментируйте строку ниже, если у вас остался файл config.php
+# и вы не хотите, чтобы он попал в репозиторий.
+# config.php

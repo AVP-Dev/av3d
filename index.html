@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AV3D - 3D печать и моделирование в Беларуси</title>
+    <meta name="description"
+        content="Профессиональная 3D печать и моделирование на заказ из Осиповичей по всей Беларуси и с возможностью международной доставки. Качественные изделия из PLA, ABS, PETG. Доступные цены в BYN.">
+
+    <link rel="canonical" href="https://av3d.by/">
+
+    <link rel="icon" href="assets/img/favicon.ico" sizes="any">
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <link rel="preload" href="assets/css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="assets/css/styles.css">
+    </noscript>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome для иконок мессенджеров -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Yandex.Metrika -->
+    <script type="text/javascript">
+        (function (m, e, t, r, i, k, a) {
+            m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+            m[i].l = 1 * new Date();
+            for (var j = 0; j < document.scripts.length; j++) {
+                if (document.scripts[j].src === r) { return; }
+            }
+            k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+        })
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+        ym(101961065, "init", {
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+        });
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/101961065" style="position:absolute; left:-9999px;" alt="" />
+        </div>
+    </noscript>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GX3HE67F24"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-GX3HE67F24');
+    </script>
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "LocalBusiness",
+      "name": "AV3D",
+      "description": "Профессиональная 3D печать и моделирование на заказ из Осиповичей по всей Беларуси и с возможностью международной доставки.",
+      "url": "https://av3d.by/",
+      "telephone": "+375291217371",
+      "email": "info@av3d.by",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Осиповичи",
+        "addressCountry": "BY"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday"
+          ],
+          "opens": "09:00",
+          "closes": "18:00"
+        }
+      ],
+      "image": "https://av3d.by/assets/img/logo.webp",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Услуги 3D печати и моделирования",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "3D печать на заказ",
+              "description": "Воплощаем вашу идею в физический объект с помощью 3D-печати. Идеально для запчастей, прототипов, сувениров и макетов.",
+              "offers": {
+                "@type": "Offer",
+                "priceCurrency": "BYN",
+                "price": "10",
+                "priceSpecification": {
+                  "@type": "PriceSpecification",
+                  "valueAddedTaxIncluded": true
+                }
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "3D моделирование",
+              "description": "Разработаем 3D-модель по вашим эскизам, чертежам или описанию. Создание с нуля, оптимизация, реверс-инжиниринг, визуализация.",
+              "offers": {
+                "@type": "Offer",
+                "priceCurrency": "BYN",
+                "price": "20",
+                "priceUnit": "HOUR",
+                "priceSpecification": {
+                  "@type": "PriceSpecification",
+                  "valueAddedTaxIncluded": true
+                }
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Срочные заказы",
+              "description": "Когда время не ждёт – получите результат максимально быстро. Приоритетная печать, экстренное моделирование, мгновенная доставка.",
+              "offers": {
+                "@type": "Offer",
+                "priceCurrency": "BYN",
+                "price": "0",
+                "description": "+50% к стоимости основной услуги",
+                "priceSpecification": {
+                  "@type": "PriceSpecification",
+                  "valueAddedTaxIncluded": true
+                }
+              }
+            }
+          }
+        ]
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "5"
+      }
+    }
+    </script>
+</head>
+
+<body>
+    <!-- Анимированный фон для всей страницы -->
+    <div class="animated-bg">
+        <div class="shapes-container">
+            <!-- Фигуры будут генерироваться и управляться JavaScript -->
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <a href="#" class="logo">
+                    <img src="assets/img/logo.webp" alt="AV3D" height="40">
+                    <span class="header__brand-text">AV3D</span>
+                </a>
+
+                <div class="header__right">
+                    <nav class="nav" id="main-nav">
+                        <a href="#about" class="nav__link">О нас</a>
+                        <a href="#services" class="nav__link">Услуги</a>
+                        <a href="#portfolio" class="nav__link">Портфолио</a>
+                        <a href="#faq" class="nav__link">FAQ</a>
+                        <a href="#contacts" class="nav__link">Контакты</a>
+                        <a href="#order" class="btn btn--primary nav__order-btn-mobile order-scroll-trigger">Оставить заявку</a>
+                        <div class="nav__theme-toggle-container">
+                            <button class="theme-toggle" id="theme-toggle-mobile" aria-label="Переключить тему"
+                                title="Переключить тему">
+                                <span class="theme-toggle__icon-wrapper">
+                                    <!-- Иконка солнца -->
+                                    <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/>
+                                    </svg>
+                                    <!-- Иконка луны -->
+                                    <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                                    </svg>
+                                </span>
+                                <span class="nav__theme-toggle-text">Сменить тему</span>
+                            </button>
+                        </div>
+                    </nav>
+                    <button class="theme-toggle header__theme-toggle--desktop" id="theme-toggle-desktop"
+                        aria-label="Переключить тему" title="Переключить тему">
+                        <span class="theme-toggle__icon-wrapper">
+                            <!-- Иконка солнца -->
+                            <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/>
+                            </svg>
+                            <!-- Иконка луны -->
+                            <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                            </svg>
+                        </span>
+                    </button>
+                    <button class="mobile-menu-toggle" aria-label="Открыть меню" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero__content">
+                    <h1 class="hero__title">Нужна деталь, прототип или уникальный подарок? AV3D: Ваша идея в реальность
+                        – быстро и точно.</h1>
+                    <p class="hero__subtitle">Создаём и печатаем 3D-модели любой сложности по всей Беларуси.</p>
+                    <div class="hero__buttons">
+                        <a href="#order" class="btn btn--primary order-scroll-trigger">Оставить заявку</a>
+                        <a href="#contacts" class="btn btn--outline">Консультация</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section about">
+            <div class="container">
+                <div class="about__wrapper">
+                    <h2 class="section__title">О нас</h2>
+                    <div class="about__grid">
+                        <div class="about__content">
+                            <p>С 2023 года <strong>помогаем частным лицам и бизнесу воплощать идеи в 3D</strong> — от
+                                сломанных запчастей до уникальных сувениров. Мы находимся в Осиповичах, но <strong>доставляем
+                                    готовую продукцию по всей Беларуси и за её пределы</strong>.</p>
+                            <p><strong>Для вас это значит:</strong></p>
+                            <ul class="about__list">
+                                <li><strong>Надёжность:</strong> Используем профессиональное оборудование Bambu Lab и
+                                    Flashforge для гарантированного качества.</li>
+                                <li><strong>Гибкость:</strong> Работаем с разными материалами (PLA, ABS, PETG, TPU), чтобы
+                                    ваша деталь идеально подходила под задачи — будь то прочность, гибкость или эстетика.
+                                </li>
+                                <li><strong>Скорость:</strong> Получите готовое изделие точно в срок, без задержек.</li>
+                                <li><strong>Ваше решение:</strong> Индивидуально подходим к каждому проекту, чтобы результат
+                                    на 100% соответствовал вашим ожиданиям и решал вашу задачу.</li>
+                                <li><strong>Выгодно:</strong> Прозрачные и доступные цены на качественные услуги.</li>
+                            </ul>
+                        </div>
+                        <div class="about__image">
+                            <img src="assets/img/printer.webp" alt="3D принтер в процессе работы" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="section__cta-bottom">
+                        <a href="#order" class="btn btn--primary order-scroll-trigger">Обсудить ваш проект</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="section services">
+            <div class="container">
+                <h2 class="section__title">Наши услуги</h2>
+                <div class="services__grid">
+                    <div class="service-card">
+                        <div class="service-card__icon">⚙️</div>
+                        <h3 class="service-card__title">3D печать на заказ</h3>
+                        <div class="service-card__content-wrapper">
+                            <p><strong>Воплощаем вашу идею в физический объект с помощью 3D-печати.</strong> Идеально
+                                для:</p>
+                            <ul class="service-card__list">
+                                <li><strong>Запчастей:</strong> Восстановление сломанных деталей бытовой техники,
+                                    инструментов, авто.</li>
+                                <li><strong>Прототипов:</strong> Создание функциональных моделей для тестирования
+                                    перед массовым производством.</li>
+                                <li><strong>Сувениров и подарков:</strong> Персонализированные и уникальные изделия по
+                                    вашему дизайну.</li>
+                                <li><strong>Макеты и модели:</strong> Архитектурные макеты, учебные пособия, миниатюры.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="service-card__bottom">
+                            <div class="service-card__price">от 10 BYN</div>
+                            <a href="#order" class="btn btn--primary order-scroll-trigger" data-service-name="3D печать на заказ" data-goal-suffix="PRINT">Заказать</a>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-card__icon">✏️</div>
+                        <h3 class="service-card__title">3D моделирование</h3>
+                        <div class="service-card__content-wrapper">
+                            <p><strong>Разработаем 3D-модель по вашим эскизам, чертежам или описанию.</strong> Наша
+                                экспертиза включает:</p>
+                            <ul class="service-card__list">
+                                <li><strong>Создание модели с нуля:</strong> По вашим идеям и требованиям.</li>
+                                <li><strong>Оптимизация:</strong> Улучшение существующих моделей для печати или других
+                                    целей.</li>
+                                <li><strong>Реверс-инжиниринг:</strong> Воссоздание 3D-модели по физическому объекту
+                                    или фотографии.</li>
+                                <li><strong>Визуализация:</b> Создание качественных рендеров для презентаций.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="service-card__bottom">
+                            <div class="service-card__price">от 20 BYN/час</div>
+                            <a href="#order" class="btn btn--primary order-scroll-trigger" data-service-name="3D моделирование" data-goal-suffix="MODELING">Заказать</a>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-card__icon">⚡</div>
+                        <h3 class="service-card__title">Срочные заказы</h3>
+                        <div class="service-card__content-wrapper">
+                            <p><strong>Когда время не ждёт – получите результат максимально быстро.</strong> Если у вас
+                                горит проект, сломалась критически важная деталь или нужен прототип 'на вчера':</p>
+                            <ul class="service-card__list">
+                                <li><strong>Ваш заказ в приоритете:</strong> Печать выполняется вне очереди.</li>
+                                <li><strong>Экстренное моделирование:</strong> Готовая 3D-модель за 24 часа.</li>
+                                <li><strong>Мгновенная доставка:</strong> Отправка в день завершения печати.</li>
+                                <li><strong>Поддержка 24/7:</b> Мы на связи, чтобы решить вашу задачу.</li>
+                            </ul>
+                        </div>
+                        <div class="service-card__bottom">
+                            <div class="service-card__price">+50% к стоимости</div>
+                            <a href="#order" class="btn btn--primary order-scroll-trigger" data-service-name="Срочные заказы" data-goal-suffix="URGENT">Заказать</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="portfolio" class="section portfolio">
+            <div class="container">
+                <h2 class="section__title">Наши работы</h2>
+                <div class="portfolio__grid">
+                    <div class="portfolio-item" data-fullsize-src="assets/img/portfolio1.webp" data-caption="Люстра (Материал: PLA, время печати: 8 часов)">
+                        <img src="assets/img/portfolio1.webp" alt="Пример работы 1: Люстра из PLA пластика" loading="lazy">
+                        <div class="portfolio-item__overlay">
+                            <h3>Люстра</h3>
+                            <p>Материал: PLA, время печати: 8 часов</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-item" data-fullsize-src="assets/img/portfolio2.webp" data-caption="Корпус для устройства (Материал: PETG, время печати: 2 часа)">
+                        <img src="assets/img/portfolio2.webp" alt="Пример работы 2: Корпус для электронного устройства из PETG"
+                            loading="lazy">
+                        <div class="portfolio-item__overlay">
+                            <h3>Корпус для устройства</h3>
+                            <p>Материал: PETG, время печати: 2 часа</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-item" data-fullsize-src="assets/img/portfolio3.webp" data-caption="Прототип детали (Материал: ABS, время печати: 35 минут)">
+                        <img src="assets/img/portfolio3.webp" alt="Пример работы 3: Прототип механической детали из ABS" loading="lazy">
+                        <div class="portfolio-item__overlay">
+                            <h3>Прототип детали</h3>
+                            <p>Материал: ABS, время печати: 35 минут</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-item" data-fullsize-src="assets/img/portfolio4.webp" data-caption="Стенд для PS5 (Материал: PLA, время печати: 10 часов)">
+                        <img src="assets/img/portfolio4.webp" alt="Пример работы 4: Стенд для игровой консоли PS5" loading="lazy">
+                        <div class="portfolio-item__overlay">
+                            <h3>Стенд для PS5</h3>
+                            <p>Материал: PLA, время печати: 10 часа</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-item" data-fullsize-src="assets/img/portfolio5.webp" data-caption="Запчасть (Материал: NYLON, время печати: 4 часа)">
+                        <img src="assets/img/portfolio5.webp" alt="Пример работы 5: Функциональная запчасть из NYLON" loading="lazy">
+                        <div class="portfolio-item__overlay">
+                            <h3>Запчасть</h3>
+                            <p>Материал: NYLON, время печати: 4 час</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-item" data-fullsize-src="assets/img/portfolio6.webp" data-caption="Макет (Материал: PLA, время печати: 4 часа)">
+                        <img src="assets/img/portfolio6.webp" alt="Пример работы 6: Архитектурный макет из PLA" loading="lazy">
+                        <div class="portfolio-item__overlay">
+                            <h3>Макет</h3>
+                            <p>Материал: PLA, время печати: 4 часа</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="order" class="section order">
+            <div class="container">
+                <h2 class="section__title">Оставить заявку</h2>
+                <form id="order-form" class="order-form"> <!-- Убран атрибут action -->
+                    <div class="form-group">
+                        <label for="name">Ваше имя:</label>
+                        <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Телефон:</label>
+                        <input type="tel" id="phone" name="phone" required
+                            placeholder="+375 (XX) XXX-XX-XX" pattern="^\+?[0-9\s()\-\+]+$">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" placeholder="Ваш email (необязательно)">
+                    </div>
+                    <div class="form-group">
+                        <label for="service-select">Выберите услугу:</label>
+                        <select id="service-select" name="service">
+                            <option value="3D печать на заказ">3D печать на заказ</option>
+                            <option value="3D моделирование">3D моделирование</option>
+                            <option value="Срочные заказы">Срочные заказы</option>
+                            <option value="Консультация">Консультация</option>
+                            <option value="Другое">Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Ваше сообщение / Описание задачи:</label>
+                        <textarea id="message" name="message" rows="5"
+                            placeholder="Опишите ваш проект, вопросы, пожелания"></textarea>
+                    </div>
+                    <input type="text" name="website" id="website" style="display:none;" tabindex="-1" autocomplete="off">
+                    <div class="g-recaptcha" data-sitekey="6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j" data-size="invisible" data-callback="onSubmit" data-badge="inline"></div>
+                    <button type="submit" class="btn btn--primary">Отправить заявку</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="faq" class="section faq">
+            <div class="container">
+                <h2 class="section__title">Часто задаваемые вопросы</h2>
+                <div class="faq__grid">
+                    <div class="faq__item">
+                        <h3 class="faq__question">
+                            <span class="faq__question-text">Какие материалы вы используете для 3D печати?</span>
+                        </h3>
+                        <div class="faq__answer">
+                            <p>Мы работаем с самыми популярными и востребованными материалами, чтобы максимально точно
+                                соответствовать требованиям вашего проекта:</p>
+                            <ul>
+                                <li><strong>PLA (Полилактид):</strong> Биоразлагаемый, прост в печати, отлично подходит
+                                    для прототипов, декоративных изделий, игрушек.</li>
+                                <li><strong>ABS (Акрилонитрилбутадиенстирол):</strong> Прочный, термостойкий, подходит
+                                    для функциональных деталей, корпусов.</li>
+                                <li><strong>PETG (Полиэтилентерефталат-гликоль):</strong> Прочный, гибкий, водостойкий,
+                                    хорош для деталей, требующих механической прочности и химической стойкости.</li>
+                                <li><strong>TPU (Термопластичный полиуретан):</strong> Гибкий и эластичный материал,
+                                    идеален для изготовления прокладок, амортизаторов, чехлов.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="faq__item">
+                        <h3 class="faq__question">
+                            <span class="faq__question-text">Как заказать 3D печать или моделирование?</span>
+                        </h3>
+                        <div class="faq__answer">
+                            <p>Это просто! Вы можете:</p>
+                            <ul>
+                                <li>Воспользоваться формой заказа на нашем сайте, описав вашу задачу и прикрепив
+                                    необходимые файлы (3D-модели, чертежи, эскизы).</li>
+                                <li>Написать нам в Telegram (<a href="https://t.me/artbyavp"
+                                        target="_blank">@artbyavp</a>) или на Email (<a
+                                        href="mailto:info@av3d.by">info@av3d.by</a>), приложив всю информацию.</li>
+                                <li>Позвонить по телефону <a href="tel:+375291217371">+375 (29) 121-73-71</a> для
+                                    быстрой консультации.</li>
+                            </ul>
+                            <p>Мы оперативно свяжемся с вами для уточнения деталей и расчёта стоимости.</p>
+                        </div>
+                    </div>
+                    <div class="faq__item">
+                        <h3 class="faq__question">
+                            <span class="faq__question-text">Сколько времени занимает выполнение заказа?</span>
+                        </h3>
+                        <div class="faq__answer">
+                            <p>Сроки зависят от сложности и объёма работы:</p>
+                            <ul>
+                                <li><strong>3D печать:</strong> от 1 рабочего дня после согласования модели.</li>
+                                <li><strong>3D моделирование:</strong> от 2-3 рабочих дней, в зависимости от
+                                    сложности.</li>
+                            </ul>
+                            <p>Для срочных заказов предусмотрено ускоренное выполнение с доплатой.</p>
+                        </div>
+                    </div>
+                    <div class="faq__item">
+                        <h3 class="faq__question">
+                            <span class="faq__question-text">Возможна ли доставка по Беларуси и за границу?</span>
+                        </h3>
+                        <div class="faq__answer">
+                            <p>Да, мы доставляем готовую продукцию по всей территории Беларуси почтой или курьерскими
+                                службами. Также возможна международная доставка. Стоимость и сроки доставки
+                                рассчитываются индивидуально.</p>
+                        </div>
+                    </div>
+                    <div class="faq__item">
+                        <h3 class="faq__question">
+                            <span class="faq__question-text">Как осуществляется оплата?</span>
+                        </h3>
+                        <div class="faq__answer">
+                            <p>Мы предлагаем несколько удобных вариантов оплаты:</p>
+                            <ul>
+                                <li>Наличный расчёт</li>
+                                <li>Безналичный расчёт (для юридических лиц)</li>
+                                <li>Оплата на банковскую карту</li>
+                            </ul>
+                            <p>Детали оплаты обсуждаются при оформлении заказа.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacts" class="section contacts">
+            <div class="container">
+                <h2 class="section__title">Контакты</h2>
+                <div class="contacts__grid">
+                    <div class="contacts__info">
+                        <h3>Наши контакты</h3>
+                        <p>Готовы воплотить вашу идею в 3D? <strong>Свяжитесь с нами для консультации или оформления
+                                заказа.</strong> Мы в Осиповичах, но работаем по всей Беларуси и можем организовать
+                            международную доставку.</p>
+                        <ul class="contacts__list">
+                            <li>
+                                <strong>Telegram:</strong> <a href="https://t.me/artbyavp"
+                                    target="_blank">@artbyavp</a>
+                            </li>
+                            <li>
+                                <strong>WhatsApp:</strong> <a href="https://wa.me/375291217371" target="_blank">+375 (29) 121-73-71</a>
+                            </li>
+                            <li>
+                                <strong>Viber:</strong> <a href="viber://chat?number=+375291217371" target="_blank">+375 (29) 121-73-71</a>
+                            </li>
+                            <li>
+                                <strong>Email:</strong> <a href="mailto:info@av3d.by">info@av3d.by</a>
+                            </li>
+                            <li>
+                                <strong>Телефон:</strong> <a href="tel:+375291217371">+375 (29) 121-73-71</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grid">
+                <div class="footer__column footer__brand">
+                    <a href="#" class="logo">
+                        <img src="assets/img/logo.webp" alt="AV3D" height="40">
+                        <span class="header__brand-text">AV3D</span>
+                    </a>
+                    <p class="footer__tagline">Воплощаем ваши идеи в реальность с помощью 3D-технологий.</p>
+                </div>
+                <div class="footer__column">
+                    <h4>Навигация</h4>
+                    <ul class="footer__links-list">
+                        <li><a href="#about">О нас</a></li>
+                        <li><a href="#services">Услуги</a></li>
+                        <li><a href="#portfolio">Портфолио</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer__column">
+                    <h4>Контакты</h4>
+                    <ul class="footer__contact-list">
+                        <li><a href="tel:+375291217371">+375 (29) 121-73-71</a></li>
+                        <li><a href="mailto:info@av3d.by">info@av3d.by</a></li>
+                        <li><span>г. Осиповичи, Беларусь</span></li>
+                    </ul>
+                </div>
+                <div class="footer__column">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="footer__social-links">
+                        <a href="https://t.me/artbyavp" target="_blank" aria-label="Telegram" title="Telegram">
+                            <i class="fab fa-telegram-plane"></i>
+                        </a>
+                        <a href="https://wa.me/375291217371" target="_blank" aria-label="WhatsApp" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="viber://chat?number=+375291217371" target="_blank" aria-label="Viber" title="Viber">
+                            <i class="fab fa-viber"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <p class="footer__copy">© 2024 AV3D. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <button id="floating-feedback-btn" class="floating-btn order-scroll-trigger" aria-label="Связаться с нами" title="Связаться с нами">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+            <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+        </svg>
+    </button>
+    <button id="scroll-to-top" class="back-to-top" aria-label="Вернуться наверх" title="Вернуться наверх">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06L12 4.81 5.03 11.03a.75.75 0 0 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M12 4.5a.75.75 0 0 1 .75.75v14.5a.75.75 0 0 1-1.5 0V5.25A.75.75 0 0 1 12 4.5Z" clip-rule="evenodd" />
+        </svg>
+    </button>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j"></script>
+    <script src="assets/js/script.js"></script>
+    <script>
+        // Функция для генерации случайного числа в диапазоне
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const shapesContainer = document.querySelector('.shapes-container');
+            const numberOfShapes = 15; // Увеличим количество фигур
+
+            if (shapesContainer) {
+                for (let i = 0; i < numberOfShapes; i++) {
+                    const shape = document.createElement('div');
+                    shape.classList.add('shape');
+
+                    // Чередуем квадраты и треугольники
+                    if (i % 2 === 0) {
+                        shape.classList.add('square');
+                    } else {
+                        shape.classList.add('triangle');
+                    }
+
+                    // Задаем случайные начальные и конечные позиции, масштабы и вращения
+                    // Начальная позиция (за пределами экрана)
+                    const xStart = random(-20, 120) + 'vw';
+                    const yStart = random(-20, 120) + 'vh';
+
+                    // Конечная позиция (за пределами экрана, но в другом направлении)
+                    const xEnd = random(-20, 120) + 'vw';
+                    const yEnd = random(-20, 120) + 'vh';
+
+                    // Начальный и конечный масштаб (увеличенный диапазон)
+                    const scaleStart = random(0.5, 1.5);
+                    const scaleEnd = random(0.8, 2.0);
+
+                    // Начальный и конечный угол поворота
+                    const rotateStart = random(0, 360) + 'deg';
+                    const rotateEnd = random(360, 720) + 'deg';
+
+                    // Длительность анимации (уменьшена для ускорения)
+                    const duration = random(8, 15) + 's';
+                    // Задержка анимации
+                    const delay = random(0, 5) + 's'; // Уменьшил задержку
+
+                    // Активная непрозрачность
+                    const opacityActive = random(0.3, 0.6); // Диапазон для ненавязчивости
+
+                    shape.style.width = random(50, 150) + 'px'; // Увеличенный размер фигур
+                    shape.style.height = shape.style.width; // Квадратные или равносторонние треугольники
+
+                    shape.style.setProperty('--x-start', xStart);
+                    shape.style.setProperty('--y-start', yStart);
+                    shape.style.setProperty('--x-end', xEnd);
+                    shape.style.setProperty('--y-end', yEnd);
+                    shape.style.setProperty('--scale-start', scaleStart);
+                    shape.style.setProperty('--scale-end', scaleEnd);
+                    shape.style.setProperty('--rotate-start', rotateStart);
+                    shape.style.setProperty('--rotate-end', rotateEnd);
+                    shape.style.setProperty('--opacity-active', opacityActive); // Применяем активную непрозрачность
+                    shape.style.animationDuration = duration;
+                    shape.style.animationDelay = delay;
+
+                    shapesContainer.appendChild(shape);
+                }
+            }
+        });
+    </script>
+
+    <div id="image-lightbox" class="modal">
+        <div class="modal-content image-lightbox__content">
+            <span class="close-modal-btn image-lightbox__close-btn">×</span>
+            <img src="" alt="Увеличенное изображение работы" id="lightbox-image" class="image-lightbox__image">
+            <p id="lightbox-caption" class="image-lightbox__caption"></p>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal-btn">×</span>
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.323 4.97-1.636-1.636a.75.75 0 1 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.597Z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <h3>Ваша заявка отправлена!</h3>
+            <p>Мы свяжемся с вами в ближайшее время для уточнения деталей.</p>
+            <button class="btn btn--primary close-modal-btn">Ок</button>
+        </div>
+    </div>
+
+    <div id="cookie-consent-banner" class="cookie-banner">
+        <div class="container cookie-banner__content">
+            <p>Мы используем файлы cookie для улучшения вашего опыта на нашем сайте. Продолжая использовать наш сайт, вы соглашаетесь с использованием файлов cookie.</p>
+            <button id="accept-cookies" class="btn btn--primary btn--small">Принять</button>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ----------------------------------------------------------------------
+    # 1. Принудительный HTTPS (перенаправление с HTTP на HTTPS)
+    # ----------------------------------------------------------------------
+    # Если HTTPS еще не включен принудительно на уровне хостинга,
+    # раскомментируй следующие три строки.
+    # Убедись, что твой SSL-сертификат корректно установлен и работает.
+    RewriteCond %{HTTPS} off
+    # Исключаем папку для проверки Let's Encrypt, чтобы она работала по HTTP, если нужно
+    RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/ [NC]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # ----------------------------------------------------------------------
+    # 2. Принудительное использование домена БЕЗ WWW
+    # ----------------------------------------------------------------------
+    # Перенаправляем с https://www.av3d.by на https://av3d.by
+    # Если твой основной домен наоборот с WWW, то эти правила нужно будет изменить.
+    RewriteCond %{HTTP_HOST} ^www\.av3d\.by$ [NC]
+    RewriteRule ^(.*)$ https://av3d.by/$1 [L,R=301]
+
+    # ----------------------------------------------------------------------
+    # 3. Удаление косой черты (trailing slash) в конце URL
+    # ----------------------------------------------------------------------
+    # Это правило убирает / в конце URL, если это не директория.
+    # Например, https://av3d.by/page/ станет https://av3d.by/page
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    # ----------------------------------------------------------------------
+    # 4. Защита чувствительных файлов (config.php, .env)
+    # ----------------------------------------------------------------------
+    <FilesMatch "^(config\.php|\.env)$">
+        Order allow,deny # Изменил порядок на allow,deny для большей совместимости, хотя deny,allow тоже часто работает
+        Deny from all
+    </FilesMatch>
+
+    # ----------------------------------------------------------------------
+    # 5. Отключение просмотра содержимого директорий
+    # ----------------------------------------------------------------------
+    Options -Indexes
+
+    # ----------------------------------------------------------------------
+    # 6. Дополнительные заголовки безопасности
+    # ----------------------------------------------------------------------
+    # Эти заголовки помогают защититься от некоторых типов атак.
+    <IfModule mod_headers.c>
+        Header set X-XSS-Protection "1; mode=block"
+        Header always append X-Frame-Options SAMEORIGIN
+        Header set X-Content-Type-Options nosniff
+        Header set Referrer-Policy "strict-origin-when-cross-origin"
+        # Можно добавить еще Content-Security-Policy, но это требует более тонкой настройки
+    </IfModule>
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 7. Управление кэшированием статических файлов в браузере
+# ----------------------------------------------------------------------
+# Это ускоряет загрузку сайта для повторных посетителей.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year" # Добавил для SVG
+    ExpiresByType image/x-icon "access plus 1 year" # Добавил для ICO (favicon)
+    
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month" # Для совместимости
+    
+    ExpiresByType application/font-woff "access plus 1 year"  # Добавил для WOFF
+    ExpiresByType application/font-woff2 "access plus 1 year" # У тебя было font/woff2, исправил на application/
+    ExpiresByType application/vnd.ms-fontobject "access plus 1 year" # Для EOT
+    ExpiresByType application/x-font-ttf "access plus 1 year"    # Для TTF
+    
+    ExpiresByType application/pdf "access plus 1 month"
+    ExpiresByType application/zip "access plus 1 month"
+    
+    ExpiresDefault "access plus 7 days" # Увеличил немного для остальных типов по умолчанию
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 8. Сжатие данных (Gzip/Deflate)
+# ----------------------------------------------------------------------
+# Уменьшает размер передаваемых файлов, ускоряя загрузку.
+<IfModule mod_deflate.c>
+    # Включаем сжатие для указанных MIME-типов
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json # Добавил JSON, если используется
+    AddOutputFilterByType DEFLATE image/svg+xml # SVG тоже хорошо сжимается
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 9. Пользовательские страницы ошибок
+# ----------------------------------------------------------------------
+# Убедись, что эти файлы существуют в корневой папке сайта
+# или укажи правильные пути к ним.
+# ErrorDocument 404 /404.html
+# ErrorDocument 403 /403.html
+# ErrorDocument 500 /500.html
+# Пока закомментировал, так как не знаю, есть ли у тебя эти страницы.
+# Если есть, раскомментируй и убедись, что пути верные.
+# Например, если они в папке /error_pages/, то будет /error_pages/404.html
