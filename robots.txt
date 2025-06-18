@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /assets/css/
+Allow: /assets/js/
+Disallow: /includes/
+
+Sitemap: https://av3d.by/sitemap.xml
+
+Host: av3d.by
