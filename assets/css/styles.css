@@ -275,10 +275,14 @@ main {
 
 .theme-toggle:hover { background-color: var(--border-color); color: var(--primary-color); }
 .theme-toggle__icon-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
+<<<<<<< HEAD
 .theme-toggle__icon { transition: opacity 0.3s ease, transform 0.3s ease; /* fill: currentColor; stroke: currentColor; */ }
 /* Принудительно устанавливаем цвет и обводку, чтобы Font Awesome и новые SVG работали с currentColor */
 .theme-toggle__icon path, .theme-toggle__icon circle { fill: currentColor; stroke: currentColor; }
 
+=======
+.theme-toggle__icon { transition: opacity 0.3s ease, transform 0.3s ease; }
+>>>>>>> bf6d6f6c484e0edd22623b18312c36b8b4e0b74c
 
 html[data-theme="light"] .theme-toggle__icon--sun { opacity: 1; transform: rotate(0deg); }
 html[data-theme="light"] .theme-toggle__icon--moon { opacity: 0; transform: rotate(-90deg); position: absolute; }
@@ -391,7 +395,10 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
+<<<<<<< HEAD
     align-items: stretch; /* Добавляем это для выравнивания высоты карточек */
+=======
+>>>>>>> bf6d6f6c484e0edd22623b18312c36b8b4e0b74c
 }
 
 .service-card {
@@ -404,7 +411,10 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     border: 1px solid var(--border-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
+<<<<<<< HEAD
     height: 100%; /* Убеждаемся, что карточка заполняет всю доступную высоту ячейки сетки */
+=======
+>>>>>>> bf6d6f6c484e0edd22623b18312c36b8b4e0b74c
 }
 .service-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-medium); }
 .service-card__icon { margin-bottom: 15px; color: var(--primary-color); font-size: 2.5em; }
@@ -554,6 +564,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     transform: scale(1.1);
 }
 
+<<<<<<< HEAD
 .footer__social-links svg { /* Убираем это, так как Font Awesome использует <i class="fab"> */
     /* width: 28px;
     height: 28px;
@@ -563,6 +574,12 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 .footer__social-links i.fab {
     font-size: 28px; /* Устанавливаем размер для иконок Font Awesome */
     line-height: 1; /* Для лучшего выравнивания */
+=======
+.footer__social-links svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+>>>>>>> bf6d6f6c484e0edd22623b18312c36b8b4e0b74c
 }
 
 
