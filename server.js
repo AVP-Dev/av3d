@@ -77,7 +77,8 @@ app.post('/includes/send-telegram', async (req, res) => {
         return res.json({ success: true, message: 'Заявка обработана.' });
     }
 
-    // 3. Защита от спама: проверка времени отправки формы
+    // 3. Защита от спама: проверка времени отправки формы (ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ОТЛАДКИ)
+    /*
     if (MIN_FORM_SUBMIT_TIME && req.headers['x-form-submit-time']) {
         const submitTime = parseInt(req.headers['x-form-submit-time'], 10); 
         if (isNaN(submitTime) || (Date.now() / 1000) - submitTime < MIN_FORM_SUBMIT_TIME) {
@@ -85,6 +86,7 @@ app.post('/includes/send-telegram', async (req, res) => {
             return res.status(429).json({ success: false, message: 'Форма отправлена слишком быстро. Пожалуйста, подождите.' });
         }
     }
+    */
 
 
     // 4. Проверка reCAPTCHA
