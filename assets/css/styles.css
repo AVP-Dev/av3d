@@ -65,18 +65,19 @@ body {
     font-family: 'Rubik', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background-color: var(--bg-color);
+    /* Удаляем background-color из body, чтобы анимированный фон был виден */
+    background-color: transparent;
     transition: background-color 0.3s ease, color 0.3s ease;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative; 
+    position: relative;
 }
 
 html.modal-open, body.modal-open {
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 .container {
@@ -105,7 +106,7 @@ a:hover {
 h1, h2, h3, h4, h5, h6 {
     color: var(--heading-color);
     line-height: 1.2;
-    margin-bottom: 0.7em; 
+    margin-bottom: 0.7em;
 }
 
 h1 { font-size: 2.5rem; }
@@ -122,8 +123,8 @@ ul { list-style: none; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 25px; 
-    font-size: 1em;    
+    padding: 12px 25px;
+    font-size: 1em;
     font-weight: 500;
     border-radius: 8px;
     cursor: pointer;
@@ -131,13 +132,13 @@ ul { list-style: none; }
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid transparent;
     box-shadow: var(--shadow-small);
-    color: var(--button-text-color); 
+    color: var(--button-text-color);
 }
 
 .btn--primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
-    color: var(--button-text-color); 
+    color: var(--button-text-color);
 }
 
 .btn--primary:hover {
@@ -145,42 +146,52 @@ ul { list-style: none; }
     border-color: var(--primary-hover-color);
     box-shadow: var(--shadow-medium);
     transform: translateY(-3px);
-    color: var(--button-text-color); 
+    color: var(--button-text-color);
 }
 
 .btn--outline {
     background-color: transparent;
-    color: var(--primary-color); 
+    color: var(--primary-color);
     border-color: var(--primary-color);
 }
 
 .btn--outline:hover {
     background-color: var(--primary-color);
-    color: var(--button-text-color); 
+    color: var(--button-text-color);
     box-shadow: var(--shadow-medium);
     transform: translateY(-3px);
 }
 
 .btn--small {
-    padding: 8px 18px; 
-    font-size: 0.85em; 
+    padding: 8px 18px;
+    font-size: 0.85em;
 }
 
 /* Основная область контента */
-main { flex-grow: 1; padding: 0; }
+main {
+    flex-grow: 1;
+    padding: 0;
+    position: relative; /* Для правильного наложения на фон */
+    z-index: 1; /* Чтобы main был поверх анимированного фона */
+}
 
 /* Секции */
-.section { padding: 50px 0; }
+.section {
+    padding: 50px 0;
+    background-color: var(--bg-color); /* Фон для каждой секции, чтобы он перекрывал анимированный фон */
+    position: relative; /* Для правильного наложения на фон */
+    z-index: 1; /* Чтобы секции были поверх анимированного фона */
+}
 .section__title { text-align: center; margin-bottom: 40px; font-size: 2.2rem; }
 .section__cta-bottom { text-align: center; margin-top: 40px; }
 
 /* Шапка */
 .header {
     background-color: var(--card-bg-color);
-    padding: 15px 0; 
+    padding: 15px 0;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1000; /* Высокий z-index для шапки */
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -201,7 +212,7 @@ main { flex-grow: 1; padding: 0; }
     font-weight: 500;
     position: relative;
     padding: 5px 0;
-    text-decoration: none; 
+    text-decoration: none;
 }
 .nav__link:hover { color: var(--primary-color); }
 .nav__link::after {
@@ -274,31 +285,16 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
 
 /* Секция "Герой" */
 .hero {
+    /* Фон теперь управляется .animated-bg, который покрывает всю страницу */
     background-size: cover;
     background-position: center;
-    padding: 70px 0;  
+    padding: 70px 0;
     text-align: center;
     display: flex;
     align-items: center;
     position: relative;
+    overflow: hidden; /* Важно для обрезки фигур, если они выходят за пределы */
 }
-
-html[data-theme="dark"] .hero { background-image: url('../img/bg-hero-dark.webp'); }
-html[data-theme="light"] .hero { background-image: url('../img/bg-hero-light.webp'); }
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); 
-    z-index: 1;
-    transition: background-color 0.3s ease;
-}
-
-html[data-theme="light"] .hero::before { background-color: rgba(var(--bg-color-rgb), 0.1); }
 
 .hero__content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
 .hero__title { font-size: 2.2rem; margin-bottom: 20px; }
@@ -307,6 +303,96 @@ html[data-theme="dark"] .hero__title, html[data-theme="dark"] .hero__subtitle { 
 html[data-theme="light"] .hero__title { color: var(--heading-color); }
 html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 .hero__buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+
+
+/* Анимированный фон для всей страницы */
+.animated-bg {
+    position: fixed; /* Фиксированное позиционирование, чтобы он всегда был на заднем плане */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Низкий z-index, чтобы контент был поверх */
+    background: linear-gradient(135deg, var(--bg-color), rgba(var(--bg-color-rgb), 0.8)); /* Градиентный фон */
+    transition: background 0.3s ease;
+}
+
+/* Контейнер для фигур */
+.shapes-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Фигуры не должны перехватывать события мыши */
+    transform-style: preserve-3d; /* Включаем 3D-трансформации */
+}
+
+/* Базовые стили для геометрических фигур */
+.shape {
+    position: absolute;
+    background-color: rgba(var(--primary-color-rgb), 0.2); /* Используем основной цвет темы с прозрачностью */
+    opacity: 0; /* Изначально скрыты */
+    animation: moveShapes linear infinite;
+    filter: blur(0.5px); /* Небольшое размытие для мягкости */
+    transform-origin: center center; /* Точка вращения */
+}
+
+/* Различные типы фигур и их анимация */
+
+/* Квадраты */
+.shape.square {
+    border-radius: 4px; /* Небольшие скругления */
+}
+
+/* Треугольники */
+.shape.triangle {
+    background-color: rgba(var(--secondary-color-rgb), 0.25); /* Используем вторичный цвет темы */
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%); /* Равносторонний треугольник */
+    border-radius: 0; /* Убираем скругления */
+}
+
+/* Анимация движения и трансформаций для фигур */
+@keyframes moveShapes {
+    0% {
+        transform: translate(var(--x-start), var(--y-start)) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+        transform: translate(var(--x-start), var(--y-start)) scale(var(--scale-start)) rotate(var(--rotate-start));
+    }
+    90% {
+        opacity: 0.8;
+        transform: translate(var(--x-end), var(--y-end)) scale(var(--scale-end)) rotate(var(--rotate-end));
+    }
+    100% {
+        transform: translate(var(--x-end), var(--y-end)) scale(0) rotate(var(--rotate-end));
+        opacity: 0;
+    }
+}
+
+/* Размеры и задержки для каждой фигуры */
+/* Для случайности начального положения и параметров анимации используем CSS-переменные,
+   которые будут задаваться через JavaScript */
+
+/* Пример стилей для конкретных фигур (переопределяются JS) - эти стили больше не нужны напрямую здесь,
+   так как JS будет динамически устанавливать размеры и задержки, но оставляем их как пример */
+/*
+.shape:nth-child(1) { width: 40px; height: 40px; animation-duration: 20s; }
+.shape:nth-child(2) { width: 50px; height: 50px; animation-duration: 25s; animation-delay: 2s; }
+.shape:nth-child(3) { width: 30px; height: 30px; animation-duration: 18s; animation-delay: 4s; }
+.shape:nth-child(4) { width: 45px; height: 45px; animation-duration: 22s; animation-delay: 6s; }
+.shape:nth-child(5) { width: 60px; height: 60px; animation-duration: 28s; animation-delay: 8s; }
+.shape:nth-child(6) { width: 35px; height: 35px; animation-duration: 21s; animation-delay: 10s; }
+.shape:nth-child(7) { width: 55px; height: 55px; animation-duration: 26s; animation-delay: 12s; }
+.shape:nth-child(8) { width: 25px; height: 25px; animation-duration: 17s; animation-delay: 14s; }
+.shape:nth-child(9) { width: 48px; height: 48px; animation-duration: 23s; animation-delay: 16s; }
+.shape:nth-child(10) { width: 32px; height: 32px; animation-duration: 19s; animation-delay: 18s; }
+.shape:nth-child(11) { width: 42px; height: 42px; animation-duration: 24s; animation-delay: 1s; }
+.shape:nth-child(12) { width: 52px; height: 52px; animation-duration: 27s; animation-delay: 3s; }
+*/
 
 
 /* Секция "О нас" */
@@ -326,15 +412,15 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     gap: 25px;
 }
 
-.service-card { 
-    display: flex; 
-    flex-direction: column; 
+.service-card {
+    display: flex;
+    flex-direction: column;
     padding: 25px;
-    border-radius: 12px; 
-    background-color: var(--card-bg-color); 
-    box-shadow: var(--shadow-small); 
-    border: 1px solid var(--border-color); 
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    border-radius: 12px;
+    background-color: var(--card-bg-color);
+    box-shadow: var(--shadow-small);
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
 }
 .service-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-medium); }
@@ -362,7 +448,8 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 
 /* Секция "Оставить заявку" */
-.order-form { max-width: 650px; margin: 0 auto; background-color: var(--card-bg-color); padding: 30px; border-radius: 12px; box-shadow: var(--shadow-medium); border: 1px solid var(--border-color); }
+.order-form { background-color: var(--card-bg-color); } /* Указываем фон для формы */
+.order-form { max-width: 650px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: var(--shadow-medium); border: 1px solid var(--border-color); }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--heading-color); }
 .form-group input[type="text"], .form-group input[type="tel"], .form-group input[type="email"], .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--input-border-color); border-radius: 8px; background-color: var(--input-bg-color); color: var(--text-color); font-size: 1em; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
@@ -405,11 +492,13 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 /* --- Footer --- */
 .footer {
-    background-color: var(--bg-color);
+    background-color: var(--bg-color); /* Фон для футера */
     padding: 50px 0 20px 0;
     margin-top: auto;
     border-top: 1px solid var(--border-color);
     font-size: 0.9em;
+    position: relative; /* Чтобы футер был поверх анимированного фона */
+    z-index: 1;
 }
 
 .footer__grid {
@@ -500,7 +589,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 /* Плавающие кнопки */
 .floating-btn, .back-to-top {
     position: fixed;
-    right: 20px; 
+    right: 20px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -509,7 +598,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     justify-content: center;
     box-shadow: var(--shadow-medium);
     transition: all 0.3s ease;
-    z-index: 1001; 
+    z-index: 1001; /* Высокий z-index для плавающих кнопок */
     border: none;
     cursor: pointer;
 }
@@ -519,11 +608,11 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     color: var(--button-text-color);
 }
 .back-to-top {
-    bottom: 85px; 
-    background-color: var(--primary-color); 
-    color: var(--button-text-color); 
-    opacity: 0; 
-    visibility: hidden; 
+    bottom: 85px;
+    background-color: var(--primary-color);
+    color: var(--button-text-color);
+    opacity: 0;
+    visibility: hidden;
     transform: translateY(10px);
 }
 .floating-btn:hover {
@@ -531,14 +620,14 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     transform: scale(1.1);
     box-shadow: var(--shadow-large);
 }
-.back-to-top.show { 
-    opacity: 1; 
-    visibility: visible; 
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
     transform: translateY(0);
 }
-.back-to-top:hover { 
-    background-color: var(--primary-hover-color); 
-    transform: scale(1.1); 
+.back-to-top:hover {
+    background-color: var(--primary-hover-color);
+    transform: scale(1.1);
 }
 .floating-btn svg, .back-to-top svg {
     width: 24px;
@@ -548,78 +637,78 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 
 /* Модальные окна */
-.modal { 
-    display: none; 
-    align-items: center; 
-    justify-content: center; 
-    position: fixed; 
-    z-index: 2000; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: var(--modal-overlay-bg); 
-    opacity: 0; 
-    visibility: hidden; 
-    transition: opacity 0.3s ease, visibility 0.3s ease; 
-    padding: 15px; 
+.modal {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 2000; /* Высокий z-index для модальных окон */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay-bg);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding: 15px;
 }
-.modal.is-active { 
-    display: flex; 
-    opacity: 1; 
-    visibility: visible; 
+.modal.is-active {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
 }
-.modal-content { 
-    background-color: var(--card-bg-color); 
-    margin: auto; 
-    padding: 30px; 
-    border-radius: 12px; 
-    max-width: 500px; 
-    width: 95%; 
-    position: relative; 
-    box-shadow: var(--shadow-large); 
+.modal-content {
+    background-color: var(--card-bg-color);
+    margin: auto;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 95%;
+    position: relative;
+    box-shadow: var(--shadow-large);
     transform: scale(0.95);
-    opacity: 0; 
-    transition: transform 0.3s ease, opacity 0.3s ease; 
-    text-align: center; 
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    text-align: center;
 }
-.modal.is-active .modal-content { 
+.modal.is-active .modal-content {
     transform: scale(1);
-    opacity: 1; 
+    opacity: 1;
 }
 
-.close-modal-btn { 
-    color: var(--text-color); 
-    position: absolute; 
-    top: 15px; 
-    right: 15px; 
-    font-size: 28px; 
-    font-weight: bold; 
-    cursor: pointer; 
+.close-modal-btn {
+    color: var(--text-color);
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
     transition: color 0.2s ease, transform 0.2s ease;
-    background: none; 
-    border: none; 
-    padding: 0; 
-    line-height: 1; 
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
 }
-.close-modal-btn:hover, .close-modal-btn:focus { 
-    color: var(--primary-color); 
+.close-modal-btn:hover, .close-modal-btn:focus {
+    color: var(--primary-color);
     transform: scale(1.1);
-    background: none; 
+    background: none;
 }
 
-#success-modal .modal-content .btn.close-modal-btn { 
-    position: static; 
-    display: inline-block; 
-    width: auto; 
-    max-width: 200px; 
-    margin-top: 20px; 
-    font-size: 1em; 
-    padding: 12px 25px; 
-    background-color: var(--primary-color); 
-    color: var(--button-text-color); 
-    border: 1px solid var(--primary-color); 
-    box-shadow: var(--shadow-small); 
+#success-modal .modal-content .btn.close-modal-btn {
+    position: static;
+    display: inline-block;
+    width: auto;
+    max-width: 200px;
+    margin-top: 20px;
+    font-size: 1em;
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: var(--button-text-color);
+    border: 1px solid var(--primary-color);
+    box-shadow: var(--shadow-small);
 }
 #success-modal .modal-content .btn.close-modal-btn:hover {
     background-color: var(--primary-hover-color);
@@ -635,19 +724,19 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 /* Лайтбокс изображений */
 .image-lightbox__content {
-    max-width: 90vw; 
-    max-height: 90vh; 
-    padding: 15px; 
+    max-width: 90vw;
+    max-height: 90vh;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden; 
+    overflow: hidden;
 }
 .image-lightbox__image {
     max-width: 100%;
-    max-height: calc(90vh - 80px); 
-    object-fit: contain; 
+    max-height: calc(90vh - 80px);
+    object-fit: contain;
     display: block;
     margin-bottom: 15px;
     border-radius: 8px;
@@ -728,24 +817,24 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     h3 { font-size: 1.3rem; }
     .section__title { font-size: 1.8rem; margin-bottom: 30px; }
     .section { padding: 40px 0; }
-    
+
     .header__right { gap: 10px; }
     .header__theme-toggle--desktop { display: none; }
     .mobile-menu-toggle { display: block; }
-    .nav { 
+    .nav {
         position: fixed;
         top: 0;
-        right: -100%; 
-        width: 280px; 
+        right: -100%;
+        width: 280px;
         height: 100vh;
         background-color: var(--card-bg-color);
         flex-direction: column;
         padding: 80px 20px 20px;
         box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
         transition: right 0.35s ease-in-out;
-        z-index: 999; 
-        align-items: flex-start; 
-        gap: 15px; 
+        z-index: 999;
+        align-items: flex-start;
+        gap: 15px;
     }
     .nav.is-active { right: 0; }
     .nav__link { display: block; width: 100%; text-align: left; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
@@ -753,7 +842,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     .nav__order-btn-mobile { display: inline-flex; width: 100%; margin-top: 15px; text-align: center; justify-content: center; border: none; }
     .nav__theme-toggle-container { display: flex !important; width: 100%; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px; }
     .nav__theme-toggle-container .theme-toggle { width: 100%; justify-content: flex-start; padding-left: 0;}
-    
+
     .hero { padding: 60px 0; }
     .hero__title { font-size: 2rem; }
     .hero__subtitle { font-size: 1rem; }

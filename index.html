@@ -6,7 +6,7 @@
     <title>AV3D - 3D печать и моделирование в Беларуси</title>
     <meta name="description"
         content="Профессиональная 3D печать и моделирование на заказ из Осиповичей по всей Беларуси и с возможностью международной доставки. Качественные изделия из PLA, ABS, PETG. Доступные цены в BYN.">
-    
+
     <link rel="canonical" href="https://av3d.by/">
 
     <link rel="icon" href="assets/img/favicon.ico" sizes="any">
@@ -35,7 +35,7 @@
         })
             (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-        ym(101961065, "init", { 
+        ym(101961065, "init", {
             clickmap: true,
             trackLinks: true,
             accurateTrackBounce: true,
@@ -54,7 +54,7 @@
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
 
-        gtag('config', 'G-GX3HE67F24'); 
+        gtag('config', 'G-GX3HE67F24');
     </script>
 
     <!-- Schema.org Structured Data -->
@@ -156,10 +156,17 @@
 </head>
 
 <body>
+    <!-- Анимированный фон для всей страницы -->
+    <div class="animated-bg">
+        <div class="shapes-container">
+            <!-- Фигуры будут генерироваться и управляться JavaScript -->
+        </div>
+    </div>
+
     <header class="header">
         <div class="container">
             <div class="header__inner">
-                <a href="#" class="logo"> 
+                <a href="#" class="logo">
                     <img src="assets/img/logo.webp" alt="AV3D" height="40">
                     <span class="header__brand-text">AV3D</span>
                 </a>
@@ -221,11 +228,11 @@
                     </button>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
     <main>
         <section class="hero">
+            <!-- Удален animated-bg из hero, теперь он находится на уровне body -->
             <div class="container">
                 <div class="hero__content">
                     <h1 class="hero__title">Нужна деталь, прототип или уникальный подарок? AV3D: Ваша идея в реальность
@@ -615,6 +622,66 @@
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js?render=6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j"></script>
     <script src="assets/js/script.js"></script>
+    <script>
+        // Функция для генерации случайного числа в диапазоне
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const shapesContainer = document.querySelector('.shapes-container');
+            const numberOfShapes = 15; // Увеличим количество фигур для более насыщенного фона
+
+            if (shapesContainer) {
+                for (let i = 0; i < numberOfShapes; i++) {
+                    const shape = document.createElement('div');
+                    shape.classList.add('shape');
+
+                    // Чередуем квадраты и треугольники
+                    if (i % 2 === 0) {
+                        shape.classList.add('square');
+                    } else {
+                        shape.classList.add('triangle');
+                    }
+
+                    // Задаем случайные начальные и конечные позиции, масштабы и вращения
+                    // Начальная позиция (за пределами экрана)
+                    const xStart = random(-20, 120) + 'vw';
+                    const yStart = random(-20, 120) + 'vh';
+
+                    // Конечная позиция (за пределами экрана, но в другом направлении)
+                    const xEnd = random(-20, 120) + 'vw';
+                    const yEnd = random(-20, 120) + 'vh';
+
+                    // Начальный и конечный масштаб
+                    const scaleStart = random(0.2, 0.8);
+                    const scaleEnd = random(0.5, 1.2);
+
+                    // Начальный и конечный угол поворота
+                    const rotateStart = random(0, 360) + 'deg';
+                    const rotateEnd = random(360, 720) + 'deg'; // Вращение более чем на 360 градусов
+
+                    // Длительность анимации
+                    const duration = random(15, 30) + 's';
+                    // Задержка анимации
+                    const delay = random(0, 10) + 's';
+
+                    shape.style.setProperty('--x-start', xStart);
+                    shape.style.setProperty('--y-start', yStart);
+                    shape.style.setProperty('--x-end', xEnd);
+                    shape.style.setProperty('--y-end', yEnd);
+                    shape.style.setProperty('--scale-start', scaleStart);
+                    shape.style.setProperty('--scale-end', scaleEnd);
+                    shape.style.setProperty('--rotate-start', rotateStart);
+                    shape.style.setProperty('--rotate-end', rotateEnd);
+                    shape.style.animationDuration = duration;
+                    shape.style.animationDelay = delay;
+
+                    shapesContainer.appendChild(shape);
+                }
+            }
+        });
+    </script>
 
     <div id="image-lightbox" class="modal">
         <div class="modal-content image-lightbox__content">
