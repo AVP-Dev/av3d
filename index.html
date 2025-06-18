@@ -232,7 +232,6 @@
 
     <main>
         <section class="hero">
-            <!-- Удален animated-bg из hero, теперь он находится на уровне body -->
             <div class="container">
                 <div class="hero__content">
                     <h1 class="hero__title">Нужна деталь, прототип или уникальный подарок? AV3D: Ваша идея в реальность
@@ -317,7 +316,7 @@
                                     целей.</li>
                                 <li><strong>Реверс-инжиниринг:</strong> Воссоздание 3D-модели по физическому объекту
                                     или фотографии.</li>
-                                <li><strong>Визуализация:</strong> Создание качественных рендеров для презентаций.
+                                <li><strong>Визуализация:</b> Создание качественных рендеров для презентаций.
                                 </li>
                             </ul>
                         </div>
@@ -630,7 +629,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const shapesContainer = document.querySelector('.shapes-container');
-            const numberOfShapes = 15; // Увеличим количество фигур для более насыщенного фона
+            const numberOfShapes = 15; // Увеличим количество фигур
 
             if (shapesContainer) {
                 for (let i = 0; i < numberOfShapes; i++) {
@@ -653,18 +652,24 @@
                     const xEnd = random(-20, 120) + 'vw';
                     const yEnd = random(-20, 120) + 'vh';
 
-                    // Начальный и конечный масштаб
-                    const scaleStart = random(0.2, 0.8);
-                    const scaleEnd = random(0.5, 1.2);
+                    // Начальный и конечный масштаб (увеличенный диапазон)
+                    const scaleStart = random(0.5, 1.5);
+                    const scaleEnd = random(0.8, 2.0);
 
                     // Начальный и конечный угол поворота
                     const rotateStart = random(0, 360) + 'deg';
-                    const rotateEnd = random(360, 720) + 'deg'; // Вращение более чем на 360 градусов
+                    const rotateEnd = random(360, 720) + 'deg';
 
-                    // Длительность анимации
-                    const duration = random(15, 30) + 's';
+                    // Длительность анимации (уменьшена для ускорения)
+                    const duration = random(8, 15) + 's';
                     // Задержка анимации
-                    const delay = random(0, 10) + 's';
+                    const delay = random(0, 5) + 's'; // Уменьшил задержку
+
+                    // Активная непрозрачность
+                    const opacityActive = random(0.3, 0.6); // Диапазон для ненавязчивости
+
+                    shape.style.width = random(50, 150) + 'px'; // Увеличенный размер фигур
+                    shape.style.height = shape.style.width; // Квадратные или равносторонние треугольники
 
                     shape.style.setProperty('--x-start', xStart);
                     shape.style.setProperty('--y-start', yStart);
@@ -674,6 +679,7 @@
                     shape.style.setProperty('--scale-end', scaleEnd);
                     shape.style.setProperty('--rotate-start', rotateStart);
                     shape.style.setProperty('--rotate-end', rotateEnd);
+                    shape.style.setProperty('--opacity-active', opacityActive); // Применяем активную непрозрачность
                     shape.style.animationDuration = duration;
                     shape.style.animationDelay = delay;
 

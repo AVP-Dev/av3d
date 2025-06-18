@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const body = document.body;
     const htmlElement = document.documentElement;
     const headerElement = document.querySelector('.header');
-    
+
     // --- Инициализация всех компонентов ---
     initThemeSwitcher();
     initMobileMenu();
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileMenuToggle.classList.toggle('is-active', isActive);
             mobileMenuToggle.setAttribute('aria-expanded', isActive);
             mobileMenuToggle.setAttribute('aria-label', isActive ? 'Закрыть меню' : 'Открыть меню');
-            
+
             htmlElement.classList.toggle('modal-open', isActive);
             body.classList.toggle('modal-open', isActive);
         });
@@ -97,18 +97,18 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', (event) => {
             const isClickInsideMenu = navMenu.contains(event.target);
             const isClickOnToggle = mobileMenuToggle.contains(event.target);
-            
+
             if (navMenu.classList.contains('is-active') && !isClickInsideMenu && !isClickOnToggle) {
                 closeMobileMenu();
             }
         });
-        
+
         navMenu.addEventListener('click', (event) => {
             if (event.target.closest('a[href^="#"]') || event.target.closest('.theme-toggle')) {
                 closeMobileMenu();
             }
         });
-        
+
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && navMenu.classList.contains('is-active')) {
                 closeMobileMenu();
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('scroll', () => {
             if (body.classList.contains('modal-open')) return;
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
+
             headerElement.classList.toggle('header--scrolled', scrollTop > 50);
 
             if (scrollTop > lastScrollTop && scrollTop > headerElement.offsetHeight) {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         }, { passive: true });
     }
-    
+
     /**
      * Инициализация обработчиков для всех ссылок-якорей и кнопок прокрутки.
      */
@@ -153,8 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.order-scroll-trigger').forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 e.preventDefault();
-                smoothScrollTo('order-form'); 
-                
+                smoothScrollTo('order-form');
+
                 const serviceName = trigger.dataset.serviceName;
                 const serviceSelect = document.getElementById('service-select');
                 if (serviceName && serviceSelect) {
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-        
+
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
              anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (event.target === modal) closeModal(modal);
             });
         });
-        
+
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 modals.forEach(modal => {
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const imageLightbox = document.getElementById('image-lightbox');
         const lightboxImage = document.getElementById('lightbox-image');
         const lightboxCaption = document.getElementById('lightbox-caption');
-        
+
         if (imageLightbox && lightboxImage && lightboxCaption) {
              document.querySelectorAll('.portfolio-item').forEach(item => {
                 item.addEventListener('click', function() {
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         }
-        
+
         window.openSuccessModal = () => openModal(document.getElementById('success-modal'));
     }
 
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit_form' }).then((token) => {
                     const formData = new FormData(form);
                     formData.append('recaptcha_response', token);
-                    
+
                     const data = Object.fromEntries(formData.entries());
 
                     fetch('/includes/send-telegram', {
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayError(phoneField, 'Пожалуйста, введите ваш телефон.');
                 isValid = false;
             }
-            
+
             return isValid;
         }
 
@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const COOKIE_CONSENT_KEY = 'av3d_cookie_consent_v1';
 
         if (!cookieBanner || !acceptBtn) return;
-        
+
         if (!localStorage.getItem(COOKIE_CONSENT_KEY)) {
             cookieBanner.classList.add('show');
         }
