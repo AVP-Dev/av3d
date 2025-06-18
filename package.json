@@ -1,18 +1,33 @@
 {
-  "name": "avp3d-telegram-feedback",
+  "name": "av3d-telegram-feedback",
   "version": "1.0.0",
-  "description": "Feedback form backend for avp3d.by using Node.js and Telegram API",
+  "private": true,
+  "description": "Feedback form backend for av3d.by using Node.js and Telegram API",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
-  "keywords": ["node.js", "express", "telegram", "feedback", "coolify"],
-  "author": "Your Name",
+  "keywords": [
+    "node.js",
+    "express",
+    "telegram",
+    "feedback",
+    "coolify",
+    "av3d"
+  ],
+  "author": "AVP-Dev",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "node-fetch": "^2.6.7"  
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }

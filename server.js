@@ -1,165 +1,137 @@
-// server.js - Основной файл вашего Node.js приложения для обработки обратной связи
+// server.js - Основной файл Node.js приложения для обработки обратной связи
+require('dotenv').config();
 
-// Загружает переменные окружения из файла .env (если он есть локально для разработки)
-// В Coolify эти переменные нужно будет добавить в разделе "Environment Variables"
-require('dotenv').config(); 
-
-// Импортируем необходимые модули
+// --- Импорт модулей ---
 const express = require('express');
 const bodyParser = require('body-parser');
-const fetch = require('node-fetch'); // Для выполнения HTTP-запросов (Node.js 18+ может использовать нативный fetch)
-const { URL } = require('url'); // Для парсинга URL referer
+const fetch = require('node-fetch');
+const { URL } = require('url');
+const path = require('path');
+const rateLimit = require('express-rate-limit');
 
+// --- Инициализация Express приложения ---
 const app = express();
-// Порт, на котором будет слушать ваше Node.js приложение.
-// Coolify будет проксировать внешний трафик на этот порт.
-const port = process.env.PORT || 3000; 
+const port = process.env.PORT || 3000;
 
-// Middleware для парсинга JSON и URL-encoded данных из POST-запросов
-// maxBytesLimit - увеличен для потенциально больших форм или reCAPTCHA ответов
-app.use(bodyParser.json({ limit: '10mb' })); 
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+// --- Переменные окружения ---
+const {
+    BOT_TOKEN,
+    CHAT_ID,
+    RECAPTCHA_SECRET_KEY,
+    ALLOWED_DOMAINS,
+    MESSAGE_THREAD_ID,
+} = process.env;
 
-// --- Переменные окружения для Telegram и reCAPTCHA ---
-// В Coolify эти переменные нужно будет добавить в разделе "Environment Variables"
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
-const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
+const RECAPTCHA_THRESHOLD = parseFloat(process.env.RECAPTCHA_THRESHOLD || '0.5');
+const allowedDomainsList = ALLOWED_DOMAINS ? ALLOWED_DOMAINS.split(',').map(d => d.trim()) : ['av3d.by', 'www.av3d.by'];
+if (process.env.NODE_ENV !== 'production') {
+    allowedDomainsList.push('localhost');
+}
 
-// RECAPTCHA_THRESHOLD может быть строкой, поэтому преобразуем в число
-const RECAPTCHA_THRESHOLD = parseFloat(process.env.RECAPTCHA_THRESHOLD || '0.5'); 
+// --- Middlewares (Промежуточное ПО) ---
 
-// Разрешенные домены для проверки referer
-// В Coolify это должна быть строка, разделенная запятыми, например: "av3d.by,www.av3d.by"
-const ALLOWED_DOMAINS_ENV = process.env.ALLOWED_DOMAINS;
-const ALLOWED_DOMAINS = ALLOWED_DOMAINS_ENV 
-    ? ALLOWED_DOMAINS_ENV.split(',').map(d => d.trim()) 
-    : ['av3d.by', 'www.av3d.by']; // Здесь явно указаны ваши домены 'av3d.by' и 'www.av3d.by'
+// 1. Парсинг тела запроса (JSON и URL-encoded)
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// MIN_FORM_SUBMIT_TIME для защиты от спама
-const MIN_FORM_SUBMIT_TIME = parseInt(process.env.MIN_FORM_SUBMIT_TIME || '5', 10);
+// 2. Обслуживание статических файлов (HTML, CSS, JS, изображения)
+// Все файлы из корневой директории будут доступны
+app.use(express.static(path.join(__dirname)));
 
-// --- Главный маршрут для обработки POST-запроса с формы обратной связи ---
-// Убедитесь, что ваш фронтенд отправляет запросы именно на этот путь!
-app.post('/includes/send-telegram', async (req, res) => {
-    // Устанавливаем заголовок Content-Type для JSON-ответа
-    res.setHeader('Content-Type', 'application/json');
+// 3. Rate Limiter: ограничение запросов для защиты от брутфорса
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 минут
+    max: 20, // Максимум 20 запросов с одного IP за 15 минут
+    message: { success: false, message: 'Слишком много запросов с вашего IP. Пожалуйста, попробуйте позже.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
-    // 1. Проверка Referer (защита от CSRF и нежелательных источников)
-    const refererHeader = req.headers.referer;
+// 4. Проверка Referer и Honeypot
+const checkSecurity = (req, res, next) => {
+    // Проверка Referer (защита от CSRF)
+    const referer = req.headers.referer;
     let refererHostname = '';
     try {
-        if (refererHeader) {
-            refererHostname = new URL(refererHeader).hostname;
+        if (referer) {
+            refererHostname = new URL(referer).hostname;
         }
     } catch (e) {
-        console.warn('Некорректный URL в заголовке Referer:', refererHeader);
-        // Если referer некорректен, можно либо запретить, либо пропустить проверку
-        // В данном случае, если парсинг не удался, refererHostname останется пустым и не будет в списке.
-    }
-    
-    // Добавляем 'localhost' для локальной разработки, если его нет в ALLOWED_DOMAINS
-    const currentAllowedDomains = [...ALLOWED_DOMAINS];
-    if (process.env.NODE_ENV !== 'production' && !currentAllowedDomains.includes('localhost')) {
-        currentAllowedDomains.push('localhost');
+        console.warn('Некорректный Referer:', referer);
     }
 
-    if (!currentAllowedDomains.includes(refererHostname)) {
-        console.error(`Доступ запрещен: Несанкционированный referer '${refererHostname}' из '${refererHeader}'`);
+    if (!allowedDomainsList.includes(refererHostname)) {
+        console.error(`Доступ запрещен: Несанкционированный referer '${refererHostname}'`);
         return res.status(403).json({ success: false, message: 'Доступ запрещен.' });
     }
 
-    // 2. Honeypot (защита от простых ботов)
-    // Если поле 'website' заполнено, это, вероятно, бот.
-    if (req.body.website) { 
-        console.log('Honeypot сработал. Заявка от бота.');
-        // Возвращаем успешный ответ, чтобы боты думали, что все ок
-        return res.json({ success: true, message: 'Заявка обработана.' });
+    // Honeypot (ловушка для простых ботов)
+    if (req.body.website) {
+        console.log('Honeypot сработал. Заявка от бота проигнорирована.');
+        // Отправляем успешный ответ, чтобы сбить бота с толку
+        return res.json({ success: true, message: 'Ваша заявка успешно отправлена!' });
     }
 
-    // 3. Защита от спама: проверка времени отправки формы (ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ОТЛАДКИ)
-    /*
-    if (MIN_FORM_SUBMIT_TIME && req.headers['x-form-submit-time']) {
-        const submitTime = parseInt(req.headers['x-form-submit-time'], 10); 
-        if (isNaN(submitTime) || (Date.now() / 1000) - submitTime < MIN_FORM_SUBMIT_TIME) {
-            console.warn(`Форма отправлена слишком быстро (${(Date.now() / 1000) - submitTime} сек).`);
-            return res.status(429).json({ success: false, message: 'Форма отправлена слишком быстро. Пожалуйста, подождите.' });
-        }
-    }
-    */
+    next(); // Если все проверки пройдены, передаем управление дальше
+};
 
+// --- Функция для санитизации ввода ---
+const sanitize = (text) => {
+    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+};
 
-    // 4. Проверка reCAPTCHA
-    const recaptchaResponse = req.body.recaptcha_response;
-    if (!recaptchaResponse) {
-        console.error('Ошибка reCAPTCHA: Токен не предоставлен.');
-        return res.status(400).json({ success: false, message: 'Ошибка reCAPTCHA: Токен не предоставлен.' });
-    }
-
-    if (!RECAPTCHA_SECRET_KEY || isNaN(RECAPTCHA_THRESHOLD)) {
-        console.error('Ошибка конфигурации: RECAPTCHA_SECRET_KEY или RECAPTCHA_THRESHOLD не определены/некорректны.');
-        return res.status(500).json({ success: false, message: 'Ошибка конфигурации сервера.' });
-    }
-
+// --- Основной маршрут для обработки формы ---
+app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, next) => {
     try {
-        const recaptchaVerifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
-        const recaptchaData = new URLSearchParams({
-            secret: RECAPTCHA_SECRET_KEY,
-            response: recaptchaResponse,
-            remoteip: req.ip || req.connection.remoteAddress // IP пользователя
-        });
+        // 1. Проверка reCAPTCHA
+        const recaptchaResponse = req.body.recaptcha_response;
+        if (!recaptchaResponse) {
+            return res.status(400).json({ success: false, message: 'reCAPTCHA токен не предоставлен.' });
+        }
 
-        const recaptchaResult = await fetch(recaptchaVerifyUrl, {
-            method: 'POST',
-            body: recaptchaData
-        });
+        const recaptchaVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaResponse}&remoteip=${req.ip}`;
+        const recaptchaResult = await fetch(recaptchaVerifyUrl, { method: 'POST' });
         const recaptchaJson = await recaptchaResult.json();
 
-        if (!recaptchaJson.success || (typeof recaptchaJson.score === 'number' && recaptchaJson.score < RECAPTCHA_THRESHOLD)) {
-            console.error('Проверка reCAPTCHA не пройдена:', JSON.stringify(recaptchaJson, null, 2));
-            const errorCodes = recaptchaJson['error-codes'] ? `Ошибки: ${recaptchaJson['error-codes'].join(', ')}` : '';
-            return res.status(400).json({ 
-                success: false, 
-                message: `Проверка reCAPTCHA не пройдена. Пожалуйста, попробуйте еще раз. ${errorCodes}` 
-            });
+        if (!recaptchaJson.success || recaptchaJson.score < RECAPTCHA_THRESHOLD) {
+            console.error('Проверка reCAPTCHA не пройдена:', recaptchaJson);
+            return res.status(400).json({ success: false, message: 'Проверка на робота не пройдена.' });
         }
 
-        // --- 5. Отправка сообщения в Telegram ---
+        // 2. Подготовка и отправка сообщения в Telegram
         if (!BOT_TOKEN || !CHAT_ID) {
             console.error('Ошибка конфигурации: BOT_TOKEN или CHAT_ID не определены.');
-            return res.status(500).json({ success: false, message: 'Ошибка конфигурации сервера (Telegram).' });
+            return res.status(500).json({ success: false, message: 'Ошибка конфигурации сервера.' });
         }
 
-        // Очистка и получение данных из формы
-        const name = req.body.name ? String(req.body.name).trim() : 'Не указано';
-        const phone = req.body.phone ? String(req.body.phone).trim() : 'Не указано';
-        let email = req.body.email ? String(req.body.email).trim() : '';
-        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { // Простая валидация email
-            email = `Некорректный email: ${email}`;
-        }
-        const message = req.body.message ? String(req.body.message).trim() : 'Нет сообщения';
-        const formType = req.body.form_type ? String(req.body.form_type).trim() : 'Заказ';
+        // Получение и санитизация данных из формы
+        const name = sanitize(req.body.name || 'Не указано');
+        const phone = sanitize(req.body.phone || 'Не указано');
+        const email = sanitize(req.body.email || ''); // Email необязателен, пустая строка ок
+        const service = sanitize(req.body.service || 'Не выбрана');
+        const messageText = sanitize(req.body.message || 'Нет сообщения');
 
-        const telegramMessage = `📌 *Новая заявка (${formType})*\n\n` +
-                                `👤 *Имя:* ${name}\n` +
-                                `📱 *Телефон:* ${phone}\n` +
-                                (email ? `📧 *Email:* ${email}\n` : '') +
-                                (message && message !== 'Нет сообщения' ? `✉️ *Сообщение:*\n${message}\n` : '');
+        const telegramMessage = `
+📌 *Новая заявка с сайта AV3D*
+
+👤 *Имя:* \`${name}\`
+📱 *Телефон:* \`${phone}\`
+${email ? `📧 *Email:* \`${email}\`\n` : ''}
+🔧 *Услуга:* ${service}
+
+✉️ *Сообщение:*
+${messageText}
+        `.trim();
 
         const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
         const telegramData = {
             chat_id: CHAT_ID,
             text: telegramMessage,
-            parse_mode: 'Markdown', // Или 'HTML', в зависимости от ваших предпочтений
-            disable_web_page_preview: true
+            parse_mode: 'Markdown',
         };
 
-        // Добавляем message_thread_id, если он есть
-        if (process.env.MESSAGE_THREAD_ID) {
-            const messageThreadId = parseInt(process.env.MESSAGE_THREAD_ID, 10);
-            if (!isNaN(messageThreadId)) {
-                telegramData.message_thread_id = messageThreadId;
-            }
+        if (MESSAGE_THREAD_ID && !isNaN(parseInt(MESSAGE_THREAD_ID))) {
+            telegramData.message_thread_id = parseInt(MESSAGE_THREAD_ID);
         }
 
         const telegramResponse = await fetch(telegramApiUrl, {
@@ -174,25 +146,27 @@ app.post('/includes/send-telegram', async (req, res) => {
             console.log('Сообщение успешно отправлено в Telegram.');
             res.json({ success: true, message: 'Ваша заявка успешно отправлена!' });
         } else {
-            console.error('Ошибка Telegram API:', JSON.stringify(telegramResult, null, 2));
-            res.status(500).json({ success: false, message: `Ошибка при отправке сообщения в Telegram: ${telegramResult.description || 'Неизвестная ошибка'}` });
+            console.error('Ошибка Telegram API:', telegramResult);
+            res.status(500).json({ success: false, message: 'Не удалось отправить заявку. Попробуйте позже.' });
         }
 
     } catch (error) {
-        console.error('Внутренняя ошибка сервера:', error);
-        res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера.' });
+        next(error); // Передаем ошибку в глобальный обработчик
     }
 });
 
-// --- Маршрут для обслуживания статических файлов ---
-// Это позволит вашему Node.js приложению отдавать index.html и другие статические файлы.
-// Учитывая ваш скриншот файловой структуры, все ваши статические файлы
-// (index.html, assets/, includes/ - которые не являются PHP-скриптами)
-// находятся прямо в корне репозитория, который в контейнере будет /app.
-app.use(express.static(__dirname)); // Отдаем статические файлы из текущей директории (/app)
+// --- Глобальный обработчик ошибок ---
+// Должен идти последним в цепочке app.use
+app.use((err, req, res, next) => {
+    console.error('Произошла внутренняя ошибка сервера:', err);
+    res.status(500).json({
+        success: false,
+        message: 'Произошла внутренняя ошибка сервера. Мы уже работаем над этим.'
+    });
+});
 
-// Слушаем указанный порт
+// --- Запуск сервера ---
 app.listen(port, () => {
-    console.log(`Node.js Server listening on port ${port}`);
-    console.log(`Access at http://localhost:${port}`); // Только для локальной разработки
+    console.log(`Сервер AV3D запущен на порту ${port}`);
+    console.log(`Для локальной разработки сайт доступен по адресу: http://localhost:${port}`);
 });
