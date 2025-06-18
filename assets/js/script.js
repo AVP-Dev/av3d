@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initFaqAccordion();
     initScrollTriggers();
     initModalWindows();
-    initFormHandling(); // Здесь будут изменения для отправки формы
+    initFormHandling();
     initCookieConsent();
 
     /**
@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
             let headerOffset = 0;
-            // Учитываем высоту "липкой" шапки
             if (headerElement && getComputedStyle(headerElement).position === 'sticky') {
                 headerOffset = headerElement.offsetHeight;
             }
-            const offsetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerOffset - 20;
+            const elementPosition = targetElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset - 20;
 
             window.scrollTo({
                 top: offsetPosition,
@@ -45,17 +45,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (themeToggleButtons.length === 0) return;
 
         const storedTheme = localStorage.getItem('theme');
-        let currentTheme = storedTheme || 'dark';
+        let currentTheme = storedTheme || 'dark'; // По умолчанию темная тема
 
         const applyTheme = (theme) => {
             htmlElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
             currentTheme = theme;
             const label = theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему';
-            themeToggleButtons.forEach(btn => {
-                btn.setAttribute('aria-label', label);
-                btn.setAttribute('title', label);
-            });
+            themeToggleButtons.forEach(btn => btn.setAttribute('aria-label', label));
         };
 
         themeToggleButtons.forEach(btn => {
@@ -73,18 +70,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function initMobileMenu() {
         const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
         const navMenu = document.getElementById('main-nav');
-
         if (!mobileMenuToggle || !navMenu) return;
 
         const closeMobileMenu = () => {
-            if (!document.querySelector('.modal.is-active')) {
-                htmlElement.classList.remove('modal-open');
-                body.classList.remove('modal-open');
-            }
             navMenu.classList.remove('is-active');
             mobileMenuToggle.classList.remove('is-active');
             mobileMenuToggle.setAttribute('aria-expanded', 'false');
             mobileMenuToggle.setAttribute('aria-label', 'Открыть меню');
+            if (!document.querySelector('.modal.is-active')) {
+                htmlElement.classList.remove('modal-open');
+                body.classList.remove('modal-open');
+            }
         };
 
         mobileMenuToggle.addEventListener('click', (event) => {
@@ -94,29 +90,25 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileMenuToggle.setAttribute('aria-expanded', isActive);
             mobileMenuToggle.setAttribute('aria-label', isActive ? 'Закрыть меню' : 'Открыть меню');
             
-            if (isActive) {
-                htmlElement.classList.add('modal-open');
-                body.classList.add('modal-open');
-            } else {
-                closeMobileMenu();
-            }
+            htmlElement.classList.toggle('modal-open', isActive);
+            body.classList.toggle('modal-open', isActive);
         });
 
-        // Закрытие меню при клике на ссылку или вне меню
         document.addEventListener('click', (event) => {
             const isClickInsideMenu = navMenu.contains(event.target);
             const isClickOnToggle = mobileMenuToggle.contains(event.target);
             
-            if (navMenu.classList.contains('is-active')) {
-                 if (event.target.closest('a[href^="#"]') || event.target.closest('.theme-toggle')) {
-                    closeMobileMenu();
-                 } else if (!isClickInsideMenu && !isClickOnToggle) {
-                    closeMobileMenu();
-                 }
+            if (navMenu.classList.contains('is-active') && !isClickInsideMenu && !isClickOnToggle) {
+                closeMobileMenu();
             }
         });
         
-        // Закрытие по клавише Esc
+        navMenu.addEventListener('click', (event) => {
+            if (event.target.closest('a[href^="#"]') || event.target.closest('.theme-toggle')) {
+                closeMobileMenu();
+            }
+        });
+        
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && navMenu.classList.contains('is-active')) {
                 closeMobileMenu();
@@ -133,14 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.addEventListener('scroll', () => {
             if (body.classList.contains('modal-open')) return;
-
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             
-            if (scrollTop > 50) {
-                headerElement.classList.add('header--scrolled');
-            } else {
-                headerElement.classList.remove('header--scrolled');
-            }
+            headerElement.classList.toggle('header--scrolled', scrollTop > 50);
 
             if (scrollTop > lastScrollTop && scrollTop > headerElement.offsetHeight) {
                 headerElement.classList.add('header--hidden');
@@ -148,23 +135,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 headerElement.classList.remove('header--hidden');
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, false);
+        }, { passive: true });
     }
     
     /**
      * Инициализация обработчиков для всех ссылок-якорей и кнопок прокрутки.
      */
     function initScrollTriggers() {
-        // Кнопка "наверх"
         const scrollToTopBtn = document.getElementById('scroll-to-top');
         if (scrollToTopBtn) {
             window.addEventListener('scroll', () => {
                 scrollToTopBtn.classList.toggle('show', window.pageYOffset > 300);
-            });
+            }, { passive: true });
             scrollToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         }
 
-        // Обработка всех кнопок, ведущих к форме заказа
         document.querySelectorAll('.order-scroll-trigger').forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -178,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Обработка всех остальных якорных ссылок
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
              anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
@@ -201,11 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         faqItems.forEach(item => {
             const question = item.querySelector('.faq__question');
             question.addEventListener('click', () => {
-                const wasActive = item.classList.contains('is-active');
-                faqItems.forEach(i => i.classList.remove('is-active'));
-                if (!wasActive) {
-                    item.classList.add('is-active');
-                }
+                item.classList.toggle('is-active');
             });
         });
     }
@@ -228,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeModal = (modal) => {
             if (modal) {
                 modal.classList.remove('is-active');
-                if (!document.querySelector('.modal.is-active') && !document.querySelector('.nav.is-active')) {
+                if (!document.querySelector('.modal.is-active') && !navMenu.classList.contains('is-active')) {
                     htmlElement.classList.remove('modal-open');
                     body.classList.remove('modal-open');
                 }
@@ -240,18 +220,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.addEventListener('click', () => closeModal(modal));
             });
             modal.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    closeModal(modal);
-                }
+                if (event.target === modal) closeModal(modal);
             });
         });
         
-         document.addEventListener('keydown', (event) => {
+        document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 modals.forEach(modal => {
-                    if(modal.classList.contains('is-active')) {
-                        closeModal(modal);
-                    }
+                    if(modal.classList.contains('is-active')) closeModal(modal);
                 });
             }
         });
@@ -281,29 +257,73 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /**
      * Инициализация обработки формы заказа.
-     * Изменено для работы с Node.js бэкендом.
      */
     function initFormHandling() {
         const orderForm = document.getElementById('order-form');
         if (!orderForm) return;
 
-        const phoneInput = document.getElementById('phone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', (e) => {
-                // Разрешаем только цифры, пробелы, скобки, тире и плюсы
-                e.target.value = e.target.value.replace(/[^\d\s\(\)\-\+]/g, '');
-            });
-        }
-        
         orderForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const form = this;
             const submitButton = form.querySelector('button[type="submit"]');
 
+            if (!validateForm(form)) return;
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Отправка...';
+
+            if (typeof grecaptcha === 'undefined' || !grecaptcha.execute) {
+                alert('Ошибка: не удалось загрузить reCAPTCHA. Пожалуйста, обновите страницу.');
+                resetButton(submitButton);
+                return;
+            }
+
+            grecaptcha.ready(() => {
+                grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit_form' }).then((token) => {
+                    const formData = new FormData(form);
+                    formData.append('recaptcha_response', token);
+                    
+                    const data = Object.fromEntries(formData.entries());
+
+                    fetch('/includes/send-telegram', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            // Если HTTP-статус не 2xx, парсим ошибку и кидаем ее дальше
+                            return response.json().then(err => { throw new Error(err.message || 'Ошибка сервера'); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            window.openSuccessModal();
+                            form.reset();
+                        } else {
+                            throw new Error(data.message || 'Произошла неизвестная ошибка.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка отправки формы:', error);
+                        alert(`Ошибка отправки: ${error.message}`);
+                    })
+                    .finally(() => {
+                        resetButton(submitButton);
+                    });
+                }).catch(error => {
+                     alert('Ошибка reCAPTCHA. Пожалуйста, попробуйте еще раз.');
+                     console.error('Ошибка получения токена reCAPTCHA:', error);
+                     resetButton(submitButton);
+                });
+            });
+        });
+
+        function validateForm(form) {
             let isValid = true;
-            // Очищаем предыдущие сообщения об ошибках
             form.querySelectorAll('.error-message-text').forEach(el => el.remove());
-            form.querySelectorAll('input.error').forEach(el => el.classList.remove('error'));
+            form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
 
             const nameField = form.querySelector('#name');
             const phoneField = form.querySelector('#phone');
@@ -317,84 +337,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValid = false;
             }
             
-            if (!isValid) return; // Если форма невалидна, прекращаем отправку
+            return isValid;
+        }
 
-            submitButton.disabled = true;
-            submitButton.textContent = 'Отправка...';
-
-            // Отправка формы с reCAPTCHA
-            grecaptcha.ready(() => {
-                grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit_form' }).then((token) => {
-                    const formData = new FormData(form);
-                    // Добавляем токен reCAPTCHA
-                    formData.append('recaptcha_response', token);
-                    // Добавляем время отправки для защиты от спама
-                    // formData.append('x-form-submit-time', Date.now() / 1000); // Этот заголовок будет установлен ниже
-
-                    // Преобразуем FormData в объект для отправки JSON
-                    const data = {};
-                    formData.forEach((value, key) => (data[key] = value));
-
-                    // Отправляем запрос на новый Node.js бэкенд
-                    fetch('/includes/send-telegram', { // ИЗМЕНЕНО: URL указывает на Node.js эндпоинт
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json', // Отправляем данные как JSON
-                            'X-Form-Submit-Time': Date.now() / 1000 // Заголовок для серверной проверки времени отправки
-                        },
-                        body: JSON.stringify(data) // Отправляем объект данных в формате JSON
-                    })
-                        .then(response => {
-                            // Проверяем, является ли ответ JSON
-                            const contentType = response.headers.get('content-type');
-                            if (contentType && contentType.indexOf('application/json') !== -1) {
-                                return response.json();
-                            } else {
-                                // Если не JSON, значит, что-то пошло не так на сервере (например, ошибка Nginx)
-                                return response.text().then(text => { throw new Error(`Ожидался JSON, но получен: ${text.substring(0, 100)}...`); });
-                            }
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                window.openSuccessModal(); // Открываем модальное окно успеха
-                                form.reset(); // Сбрасываем форму
-                            } else {
-                                // Показываем сообщение об ошибке, полученное от сервера
-                                // Вместо alert() можно использовать более красивые модальные окна
-                                // или сообщения на странице.
-                                throw new Error(data.message || 'Произошла неизвестная ошибка на сервере.');
-                            }
-                        })
-                        .catch(error => {
-                            const errorMessage = error.message.includes('Ожидался JSON') 
-                                ? 'Сервер вернул неожиданный ответ. Проверьте логи сервера.' 
-                                : `Ошибка отправки: ${error.message}`;
-                            alert(errorMessage); // Используем alert по вашему текущему коду
-                            console.error('Ошибка отправки формы:', error);
-                        })
-                        .finally(() => {
-                            // Всегда возвращаем кнопку в исходное состояние
-                            submitButton.disabled = false;
-                            submitButton.textContent = 'Отправить заявку';
-                        });
-                }).catch(error => {
-                     // Ошибка при получении токена reCAPTCHA
-                     alert('Ошибка reCAPTCHA. Пожалуйста, попробуйте еще раз.');
-                     console.error('Ошибка получения токена reCAPTCHA:', error);
-                     submitButton.disabled = false;
-                     submitButton.textContent = 'Отправить заявку';
-                });
-            });
-        });
-
-        // Вспомогательная функция для отображения ошибок валидации формы
         function displayError(inputElement, message) {
             inputElement.classList.add('error');
             const errorElement = document.createElement('span');
             errorElement.className = 'error-message-text';
             errorElement.textContent = message;
-            // Вставляем сообщение об ошибке после поля ввода
             inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+        }
+
+        function resetButton(button) {
+            button.disabled = false;
+            button.textContent = 'Отправить заявку';
         }
     }
 
@@ -404,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function initCookieConsent() {
         const cookieBanner = document.getElementById('cookie-consent-banner');
         const acceptBtn = document.getElementById('accept-cookies');
-        const COOKIE_CONSENT_KEY = 'av3d_cookie_consent';
+        const COOKIE_CONSENT_KEY = 'av3d_cookie_consent_v1';
 
         if (!cookieBanner || !acceptBtn) return;
         
