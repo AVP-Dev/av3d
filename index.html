@@ -391,7 +391,7 @@
         <section id="order" class="section order">
             <div class="container">
                 <h2 class="section__title">Оставить заявку</h2>
-                <form id="order-form" class="order-form"> <!-- Убран атрибут action -->
+                <form id="order-form" class="order-form">
                     <div class="form-group">
                         <label for="name">Ваше имя:</label>
                         <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
@@ -445,7 +445,7 @@
                                     для функциональных деталей, корпусов.</li>
                                 <li><strong>PETG (Полиэтилентерефталат-гликоль):</strong> Прочный, гибкий, водостойкий,
                                     хорош для деталей, требующих механической прочности и химической стойкости.</li>
-                                <li><strong>TPU (Термопластичный полиуретан):</strong> Гибкий и эластичный материал,
+                                <li><strong>TPU (Термопластичный полиуретан):</b> Гибкий и эластичный материал,
                                     идеален для изготовления прокладок, амортизаторов, чехлов.</li>
                             </ul>
                         </div>
@@ -644,16 +644,16 @@
                     const rotateStart = random(0, 360) + 'deg';
                     const rotateEnd = random(360, 720) + 'deg';
 
-                    // Длительность анимации (уменьшена для ускорения)
+                    // Длительность анимации
                     const duration = random(8, 15) + 's';
                     // Задержка анимации
-                    const delay = random(0, 5) + 's'; // Уменьшил задержку
+                    const delay = random(0, 5) + 's';
 
                     // Активная непрозрачность
-                    const opacityActive = random(0.3, 0.6); // Диапазон для ненавязчивости
+                    const opacityActive = random(0.3, 0.6);
 
-                    shape.style.width = random(50, 150) + 'px'; // Увеличенный размер фигур
-                    shape.style.height = shape.style.width; // Квадратные или равносторонние треугольники
+                    shape.style.width = random(50, 150) + 'px';
+                    shape.style.height = shape.style.width;
 
                     shape.style.setProperty('--x-start', xStart);
                     shape.style.setProperty('--y-start', yStart);
@@ -663,7 +663,7 @@
                     shape.style.setProperty('--scale-end', scaleEnd);
                     shape.style.setProperty('--rotate-start', rotateStart);
                     shape.style.setProperty('--rotate-end', rotateEnd);
-                    shape.style.setProperty('--opacity-active', opacityActive); // Применяем активную непрозрачность
+                    shape.style.setProperty('--opacity-active', opacityActive);
                     shape.style.animationDuration = duration;
                     shape.style.animationDelay = delay;
 

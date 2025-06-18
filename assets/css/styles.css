@@ -289,7 +289,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
 .hero {
     background-size: cover;
     background-position: center;
-    padding: 70px 0;
+    padding: 100px 0; /* Увеличено для более заметного блока */
     text-align: center;
     display: flex;
     align-items: center;
@@ -390,7 +390,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
-    align-items: stretch; /* Добавляем это для выравнивания высоты карточек */
+    align-items: stretch;
 }
 
 .service-card {
@@ -403,7 +403,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     border: 1px solid var(--border-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
-    height: 100%; /* Убеждаемся, что карточка заполняет всю доступную высоту ячейки сетки */
+    height: 100%;
 }
 .service-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-medium); }
 .service-card__icon { margin-bottom: 15px; color: var(--primary-color); font-size: 2.5em; }
@@ -430,7 +430,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 
 /* Секция "Оставить заявку" */
-.order-form { background-color: var(--card-bg-color); } /* Указываем фон для формы */
+.order-form { background-color: var(--card-bg-color); }
 .order-form { max-width: 650px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: var(--shadow-medium); border: 1px solid var(--border-color); }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--heading-color); }
@@ -472,16 +472,16 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 .contacts__list li a { color: var(--text-color); word-break: break-all; }
 .contacts__list li a:hover { color: var(--primary-color); }
 
-/* --- Footer --- */
+/* Footer */
 .footer {
-    background-color: var(--bg-color); /* Фон для футера */
+    background-color: var(--bg-color);
     padding: 50px 0 20px 0;
     margin-top: auto;
     border-top: 1px solid var(--border-color);
     font-size: 0.9em;
-    position: relative; /* Чтобы футер был поверх анимированного фона */
+    position: relative;
     z-index: 1;
-    transition: background-color 0.3s ease; /* Добавляем переход */
+    transition: background-color 0.3s ease;
 }
 
 .footer__grid {
@@ -549,10 +549,10 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     transform: scale(1.1);
 }
 
-/* Добавляем стили для Font Awesome иконок */
+/* Стили для иконок Font Awesome */
 .footer__social-links i.fab {
-    font-size: 28px; /* Устанавливаем размер для иконок Font Awesome */
-    line-height: 1; /* Для лучшего выравнивания */
+    font-size: 28px;
+    line-height: 1;
 }
 
 
@@ -577,7 +577,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     justify-content: center;
     box-shadow: var(--shadow-medium);
     transition: all 0.3s ease;
-    z-index: 1001; /* Высокий z-index для плавающих кнопок */
+    z-index: 1001;
     border: none;
     cursor: pointer;
 }
@@ -621,7 +621,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 2000; /* Высокий z-index для модальных окон */
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
@@ -763,7 +763,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
-/* --- Медиа-запросы --- */
+/* Медиа-запросы */
 
 /* Планшеты */
 @media (min-width: 768px) {
@@ -784,7 +784,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 @media (min-width: 1024px) {
     h1 { font-size: 3.2rem; }
     .hero__title { font-size: 3.2rem; }
-    .hero { padding: 90px 0; }
+    .hero { padding: 120px 0; } /* Дополнительно увеличено для десктопов */
     .about__image img { max-height: 400px; }
 }
 
@@ -822,7 +822,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     .nav__theme-toggle-container { display: flex !important; width: 100%; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px; }
     .nav__theme-toggle-container .theme-toggle { width: 100%; justify-content: flex-start; padding-left: 0;}
 
-    .hero { padding: 60px 0; }
+    .hero { padding: 80px 0; } /* Увеличено для мобильных устройств */
     .hero__title { font-size: 2rem; }
     .hero__subtitle { font-size: 1rem; }
     .hero__buttons { flex-direction: column; gap: 15px; align-items: center; }
