@@ -1,230 +1,33 @@
-# Created by https://www.toptal.com/developers/gitignore/api/c,composer,php,macos,linux,windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=c,composer,php,macos,linux,windows
-
-### C ###
-# Prerequisites
-*.d
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-### Composer ###
-# Packages and dependencies installed by Composer
-/vendor/
-
-# Lock file (should be committed)
-# composer.lock
-
-# Log files
-*.log
-/logs/
-
-# PHPUnit
-/phpunit.xml
-/phpunit.xml.dist
-
-# Cache files
-/cache/
-
-# Environment variables
+Вот содержимое файла .gitignore, которое вы можете создать в корне вашего репозитория. Он включает в себя стандартные исключения для Node.js проектов, а также некоторые общие файлы, которые не должны попадать в Git (включая остатки PHP-конфигурации).# Node.js
+node_modules/
+npm-debug.log
 .env
-.env.local
-.env.*.local
-
-# Behat
-/behat.yml
-/behat.yml.dist
-
-# PHPSpec
-/phpspec.yml
-/phpspec.yml.dist
-
-### Linux ###
-*~
-
-# temporary files which can be created if a process is suddenly stopped
-.fuse_hidden*
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on external disk
-.Trash-*
-
-# Coredumps
-core
-
-### macOS ###
-# General
+build/
+dist/
+*.tgz
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP shares
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-### PHP ###
-# Composer
-/vendor/
-
-# PHPUnit
-/phpunit.xml
-/phpunit.xml.dist
-
-# Behat
-/behat.yml
-/behat.yml.dist
-
-# PHPSpec
-/phpspec.yml
-/phpspec.yml.dist
-
-# Codeception
-/codeception.yml
-/tests/_output
-/tests/_data
-/tests/_support/_generated
-
-# Psalm
-/psalm.xml
-/psalm.xml.dist
-/psalm-baseline.xml
-/psalm-report.xml
-/psalm-report-*.xml
-
-# PHP-CS-Fixer
-/.php-cs-fixer.php
-/.php_cs.cache
-/.php-cs-fixer.dist.php
-
-# PHPStan
-/phpstan.neon
-/phpstan.neon.dist
-/phpstan-baseline.neon
-/phpstan-baseline.php
-/_phpstan_*.php
-
-# Pest
-/.pest
-/tests/Pest.php
-
-# Symfony
-/public/build/
-/var/
-/.env.local
-/.env.local.php
-/.env.*.local
-/config/secrets/prod/prod.decrypt.key
-
-# Laravel
-/public/hot
-/public/storage
-/storage/*.key
-/bootstrap/cache/*.php
-/.phpunit.result.cache
-/Homestead.json
-/Homestead.yaml
-/npm-debug.log
-/yarn-error.log
-/.idea
-/.vscode
-
-# Logs
 *.log
-/logs/
+/form_submissions.log # Лог файл из вашего PHP проекта
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.vscode/ # Если используете VSCode и хотите игнорировать его настройки
 
-# Built-in server
-.php-server-router.php
+# PHP-специфичные (если остались какие-то старые файлы)
+*.php~
+*.bak
+*.old
+*.tmp
+# config.php # Если вы больше не используете PHP, и не хотите, чтобы этот файл был в репозитории
 
-### Windows ###
-# Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
+# IDEs and OS
+.idea/ # IntelliJ IDEA
+.vscode/ # Visual Studio Code
+.DS_Store # macOS
+Thumbs.db # Windows
 
-# Dump file
-*.stackdump
-
-# Folder config file
-[Dd]esktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-# End of https://www.toptal.com/developers/gitignore/api/c,composer,php,macos,linux,windows
+# Coolify / Deployment artifacts (Coolify генерирует их)
+.coolify/
+artifacts/
+Объяснение:node_modules/: Папка, содержащая все установленные зависимости Node.js. Она генерируется командой npm install и не должна храниться в Git.npm-debug.log: Лог-файл, создаваемый npm в случае ошибок..env: Файл, содержащий переменные окружения (например, ключи API, токены). Эти данные должны быть конфиденциальными и не должны попадать в Git-репозиторий. В Coolify вы добавляете эти переменные отдельно.build/, dist/: Часто используемые папки для скомпилированного или собранного кода, который также не нужно хранить в Git.*.tgz: Архивы пакетов, которые могут быть созданы npm..DS_Store, Thumbs.db: Скрытые файлы операционных систем macOS и Windows соответственно, содержащие метаданные папок.*.log, /form_submissions.log: Файлы логов, которые генерируются приложением и не являются частью исходного кода.PHP-специфичные файлы: Включены для очистки, если у вас остались какие-либо резервные копии или временные файлы от старой PHP-разработки..coolify/, artifacts/: Папки, которые могут быть созданы Coolify или вашей системой развертывания и не должны быть частью вашего исходного кода.Создайте новый файл с именем .gitignore (обратите внимание на точку в начале) в корне вашего репозитория и вставьте в него этот код.

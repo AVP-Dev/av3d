@@ -1,0 +1,18 @@
+{
+  "name": "avp3d-telegram-feedback",
+  "version": "1.0.0",
+  "description": "Feedback form backend for avp3d.by using Node.js and Telegram API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["node.js", "express", "telegram", "feedback", "coolify"],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^2.6.7"  
+  }
+}

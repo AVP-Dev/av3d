@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initFaqAccordion();
     initScrollTriggers();
     initModalWindows();
-    initFormHandling();
+    initFormHandling(); // Здесь будут изменения для отправки формы
     initCookieConsent();
 
     /**
@@ -281,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /**
      * Инициализация обработки формы заказа.
+     * Изменено для работы с Node.js бэкендом.
      */
     function initFormHandling() {
         const orderForm = document.getElementById('order-form');
@@ -289,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const phoneInput = document.getElementById('phone');
         if (phoneInput) {
             phoneInput.addEventListener('input', (e) => {
+                // Разрешаем только цифры, пробелы, скобки, тире и плюсы
                 e.target.value = e.target.value.replace(/[^\d\s\(\)\-\+]/g, '');
             });
         }
@@ -299,6 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitButton = form.querySelector('button[type="submit"]');
 
             let isValid = true;
+            // Очищаем предыдущие сообщения об ошибках
             form.querySelectorAll('.error-message-text').forEach(el => el.remove());
             form.querySelectorAll('input.error').forEach(el => el.classList.remove('error'));
 
@@ -314,47 +317,84 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValid = false;
             }
             
-            if (!isValid) return;
+            if (!isValid) return; // Если форма невалидна, прекращаем отправку
 
             submitButton.disabled = true;
             submitButton.textContent = 'Отправка...';
 
+            // Отправка формы с reCAPTCHA
             grecaptcha.ready(() => {
                 grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit_form' }).then((token) => {
                     const formData = new FormData(form);
+                    // Добавляем токен reCAPTCHA
                     formData.append('recaptcha_response', token);
-                    
-                    fetch('includes/send_telegram.php', { method: 'POST', body: formData })
-                        .then(response => response.json())
+                    // Добавляем время отправки для защиты от спама
+                    formData.append('x-form-submit-time', Date.now() / 1000); 
+
+                    // Преобразуем FormData в объект для отправки JSON
+                    const data = {};
+                    formData.forEach((value, key) => (data[key] = value));
+
+                    // Отправляем запрос на новый Node.js бэкенд
+                    fetch('/includes/send-telegram', { // ИЗМЕНЕНО: URL указывает на Node.js эндпоинт
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // Отправляем данные как JSON
+                            'X-Form-Submit-Time': Date.now() / 1000 // Заголовок для серверной проверки времени отправки
+                        },
+                        body: JSON.stringify(data) // Отправляем объект данных в формате JSON
+                    })
+                        .then(response => {
+                            // Проверяем, является ли ответ JSON
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.indexOf('application/json') !== -1) {
+                                return response.json();
+                            } else {
+                                // Если не JSON, значит, что-то пошло не так на сервере (например, ошибка Nginx)
+                                return response.text().then(text => { throw new Error(`Ожидался JSON, но получен: ${text.substring(0, 100)}...`); });
+                            }
+                        })
                         .then(data => {
                             if (data.success) {
-                                window.openSuccessModal();
-                                form.reset();
+                                window.openSuccessModal(); // Открываем модальное окно успеха
+                                form.reset(); // Сбрасываем форму
                             } else {
-                                throw new Error(data.message || 'Произошла ошибка на сервере.');
+                                // Показываем сообщение об ошибке, полученное от сервера
+                                throw new Error(data.message || 'Произошла неизвестная ошибка на сервере.');
                             }
                         })
                         .catch(error => {
-                            alert(`Ошибка отправки: ${error.message}`);
+                            // Отображаем ошибку пользователю
+                            // Вместо alert() можно использовать более красивые модальные окна
+                            // или сообщения на странице.
+                            const errorMessage = error.message.includes('Ожидался JSON') 
+                                ? 'Сервер вернул неожиданный ответ. Проверьте логи сервера.' 
+                                : `Ошибка отправки: ${error.message}`;
+                            alert(errorMessage);
                             console.error('Ошибка отправки формы:', error);
                         })
                         .finally(() => {
+                            // Всегда возвращаем кнопку в исходное состояние
                             submitButton.disabled = false;
                             submitButton.textContent = 'Отправить заявку';
                         });
                 }).catch(error => {
+                     // Ошибка при получении токена reCAPTCHA
                      alert('Ошибка reCAPTCHA. Пожалуйста, попробуйте еще раз.');
+                     console.error('Ошибка получения токена reCAPTCHA:', error);
                      submitButton.disabled = false;
                      submitButton.textContent = 'Отправить заявку';
                 });
             });
         });
 
+        // Вспомогательная функция для отображения ошибок валидации формы
         function displayError(inputElement, message) {
             inputElement.classList.add('error');
             const errorElement = document.createElement('span');
             errorElement.className = 'error-message-text';
             errorElement.textContent = message;
+            // Вставляем сообщение об ошибке после поля ввода
             inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
         }
     }
