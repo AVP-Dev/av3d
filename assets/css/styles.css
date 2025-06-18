@@ -21,6 +21,7 @@
     --primary-color-rgb: 90, 103, 216;
     --secondary-color-rgb: 99, 179, 237;
     --bg-color-rgb: 26, 32, 44;
+    --card-bg-color-rgb: 45, 55, 72;
 }
 
 /* Переменные для светлой темы */
@@ -46,6 +47,7 @@
     --primary-color-rgb: 102, 126, 234;
     --secondary-color-rgb: 49, 130, 206;
     --bg-color-rgb: 247, 250, 252;
+    --card-bg-color-rgb: 255, 255, 255;
 }
 
 /* Базовые стили */
@@ -65,7 +67,7 @@ body {
     font-family: 'Rubik', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background-color: transparent; /* Фон теперь управляется .animated-bg */
+    background-color: transparent;
     transition: background-color 0.3s ease, color 0.3s ease;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -171,28 +173,28 @@ main {
     flex-grow: 1;
     padding: 0;
     position: relative;
-    z-index: 1; /* Чтобы main был поверх анимированного фона */
+    z-index: 1;
 }
 
 /* Секции */
 .section {
     padding: 50px 0;
-    background-color: var(--bg-color); /* Фон для каждой секции, чтобы он перекрывал анимированный фон */
-    position: relative; /* Для правильного наложения на фон */
-    z-index: 1; /* Чтобы секции были поверх анимированного фона */
-    transition: background-color 0.3s ease; /* Добавляем переход для смены темы */
+    background-color: transparent;
+    position: relative;
+    z-index: 1;
+    transition: background-color 0.3s ease;
 }
 .section__title { text-align: center; margin-bottom: 40px; font-size: 2.2rem; }
 .section__cta-bottom { text-align: center; margin-top: 40px; }
 
 /* Шапка */
 .header {
-    background-color: var(--card-bg-color);
+    background-color: rgba(var(--bg-color-rgb), 0.95);
     padding: 15px 0;
     position: sticky;
     top: 0;
-    z-index: 1000; /* Высокий z-index для шапки */
-    transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease; /* Добавляем переход */
+    z-index: 1000;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
 }
 
 .header.header--scrolled { box-shadow: var(--shadow-small); }
@@ -276,7 +278,6 @@ main {
 .theme-toggle:hover { background-color: var(--border-color); color: var(--primary-color); }
 .theme-toggle__icon-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
 .theme-toggle__icon { transition: opacity 0.3s ease, transform 0.3s ease; }
-/* Принудительно устанавливаем цвет и обводку, чтобы Font Awesome и новые SVG работали с currentColor */
 .theme-toggle__icon path, .theme-toggle__icon circle { fill: currentColor; stroke: currentColor; }
 
 html[data-theme="light"] .theme-toggle__icon--sun { opacity: 1; transform: rotate(0deg); }
@@ -289,12 +290,12 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
 .hero {
     background-size: cover;
     background-position: center;
-    padding: 100px 0; /* Увеличено для более заметного блока */
+    padding: 100px 0;
     text-align: center;
     display: flex;
     align-items: center;
     position: relative;
-    overflow: hidden; /* Важно для обрезки фигур, если они выходят за пределы */
+    overflow: hidden;
 }
 
 .hero__content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
@@ -308,14 +309,14 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 /* Анимированный фон для всей страницы */
 .animated-bg {
-    position: fixed; /* Фиксированное позиционирование, чтобы он всегда был на заднем плане */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    z-index: -1; /* Низкий z-index, чтобы контент был поверх */
-    background: linear-gradient(135deg, var(--bg-color), rgba(var(--bg-color-rgb), 0.8)); /* Градиентный фон */
+    z-index: -1;
+    background: linear-gradient(135deg, var(--bg-color), rgba(var(--bg-color-rgb), 0.8));
     transition: background 0.3s ease;
 }
 
@@ -326,32 +327,29 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* Фигуры не должны перехватывать события мыши */
-    transform-style: preserve-3d; /* Включаем 3D-трансформации */
+    pointer-events: none;
+    transform-style: preserve-3d;
 }
 
 /* Базовые стили для геометрических фигур */
 .shape {
     position: absolute;
-    background-color: rgba(var(--primary-color-rgb), 0.15); /* Уменьшаем непрозрачность */
-    opacity: 0; /* Изначально скрыты */
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+    opacity: 0;
     animation: moveShapes linear infinite;
-    filter: blur(2px); /* Увеличиваем размытие для мягкости */
-    transform-origin: center center; /* Точка вращения */
+    filter: blur(2px);
+    transform-origin: center center;
 }
 
 /* Различные типы фигур и их анимация */
-
-/* Квадраты */
 .shape.square {
-    border-radius: 4px; /* Небольшие скругления */
+    border-radius: 4px;
 }
 
-/* Треугольники */
 .shape.triangle {
-    background-color: rgba(var(--secondary-color-rgb), 0.2); /* Используем вторичный цвет темы, уменьшаем непрозрачность */
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%); /* Равносторонний треугольник */
-    border-radius: 0; /* Убираем скругления */
+    background-color: rgba(var(--secondary-color-rgb), 0.2);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    border-radius: 0;
 }
 
 /* Анимация движения и трансформаций для фигур */
@@ -361,11 +359,11 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
         opacity: 0;
     }
     10% {
-        opacity: var(--opacity-active, 0.5); /* Новая переменная для активной непрозрачности */
+        opacity: var(--opacity-active, 0.5);
         transform: translate(var(--x-start), var(--y-start)) scale(var(--scale-start)) rotate(var(--rotate-start));
     }
     90% {
-        opacity: var(--opacity-active, 0.5); /* Новая переменная для активной непрозрачности */
+        opacity: var(--opacity-active, 0.5);
         transform: translate(var(--x-end), var(--y-end)) scale(var(--scale-end)) rotate(var(--rotate-end));
     }
     100% {
@@ -376,7 +374,13 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 
 /* Секция "О нас" */
-.about__wrapper { background-color: var(--card-bg-color); padding: 30px; border-radius: 12px; box-shadow: var(--shadow-medium); border: 1px solid var(--border-color); }
+.about__wrapper {
+    background-color: rgba(var(--card-bg-color-rgb), 0.9);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--border-color);
+}
 .about__grid { display: grid; gap: 30px; align-items: center; }
 .about__image img { border-radius: 12px; box-shadow: var(--shadow-medium); width: 100%; height: auto; object-fit: cover; }
 .about__list { padding-left: 0; margin-top: 1.2em; }
@@ -398,7 +402,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     flex-direction: column;
     padding: 25px;
     border-radius: 12px;
-    background-color: var(--card-bg-color);
+    background-color: rgba(var(--card-bg-color-rgb), 0.9);
     box-shadow: var(--shadow-small);
     border: 1px solid var(--border-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -430,8 +434,15 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 
 /* Секция "Оставить заявку" */
-.order-form { background-color: var(--card-bg-color); }
-.order-form { max-width: 650px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: var(--shadow-medium); border: 1px solid var(--border-color); }
+.order-form {
+    background-color: rgba(var(--card-bg-color-rgb), 0.9);
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--border-color);
+}
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--heading-color); }
 .form-group input[type="text"], .form-group input[type="tel"], .form-group input[type="email"], .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--input-border-color); border-radius: 8px; background-color: var(--input-bg-color); color: var(--text-color); font-size: 1em; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
@@ -447,14 +458,27 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 /* Секция FAQ */
 .faq__grid { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-.faq__item { background-color: var(--card-bg-color); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--shadow-small); overflow: hidden; transition: box-shadow 0.3s ease; }
+.faq__item {
+    background-color: rgba(var(--card-bg-color-rgb), 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-small);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
 .faq__item.is-active { box-shadow: var(--shadow-medium); }
 .faq__question { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; cursor: pointer; font-size: 1.1em; font-weight: 600; color: var(--heading-color); transition: background-color 0.3s ease; }
 .faq__question:hover { background-color: rgba(var(--primary-color-rgb), 0.1); }
 .faq__question-text { flex-grow: 1; margin-right: 15px; }
 .faq__question::after { content: '+'; font-size: 1.6em; font-weight: 300; transition: transform 0.3s ease; line-height: 1; width: 25px; text-align: center; }
 .faq__item.is-active .faq__question::after { content: '−'; transform: rotate(180deg); }
-.faq__answer { padding: 0 22px; background-color: var(--card-bg-color); max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out; }
+.faq__answer {
+    padding: 0 22px;
+    background-color: rgba(var(--card-bg-color-rgb), 0.9);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+}
 .faq__answer p, .faq__answer ul { padding-bottom: 18px; margin-bottom: 0; }
 .faq__answer ul { list-style: disc; padding-left: 20px; }
 .faq__answer ul li { margin-bottom: 8px; }
@@ -463,18 +487,35 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 
 /* Секция "Контакты" */
 .contacts__grid { display: grid; place-items: center; }
-.contacts__info { background-color: var(--card-bg-color); padding: 30px; border-radius: 12px; box-shadow: var(--shadow-medium); border: 1px solid var(--border-color); width: 100%; max-width: 650px; text-align: left; }
+.contacts__info {
+    background-color: rgba(var(--card-bg-color-rgb), 0.9);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 650px;
+    text-align: center;
+}
 .contacts__info h3 { margin-bottom: 18px; font-size: 1.6em; color: var(--heading-color); }
 .contacts__info p { margin-bottom: 1.5em; font-size: 1.0em; }
 .contacts__list { list-style: none; padding-left: 0; }
-.contacts__list li { margin-bottom: 15px; font-size: 1.0em; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.contacts__list li {
+    margin-bottom: 15px;
+    font-size: 1.0em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
 .contacts__list li strong { color: var(--heading-color); white-space: nowrap; }
 .contacts__list li a { color: var(--text-color); word-break: break-all; }
 .contacts__list li a:hover { color: var(--primary-color); }
 
 /* Footer */
 .footer {
-    background-color: var(--bg-color);
+    background-color: rgba(var(--bg-color-rgb), 0.95);
     padding: 50px 0 20px 0;
     margin-top: auto;
     border-top: 1px solid var(--border-color);
@@ -784,7 +825,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 @media (min-width: 1024px) {
     h1 { font-size: 3.2rem; }
     .hero__title { font-size: 3.2rem; }
-    .hero { padding: 120px 0; } /* Дополнительно увеличено для десктопов */
+    .hero { padding: 120px 0; }
     .about__image img { max-height: 400px; }
 }
 
@@ -822,7 +863,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     .nav__theme-toggle-container { display: flex !important; width: 100%; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px; }
     .nav__theme-toggle-container .theme-toggle { width: 100%; justify-content: flex-start; padding-left: 0;}
 
-    .hero { padding: 80px 0; } /* Увеличено для мобильных устройств */
+    .hero { padding: 80px 0; }
     .hero__title { font-size: 2rem; }
     .hero__subtitle { font-size: 1rem; }
     .hero__buttons { flex-direction: column; gap: 15px; align-items: center; }

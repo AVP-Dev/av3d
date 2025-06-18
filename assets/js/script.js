@@ -1,10 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Основные переменные ---
     const body = document.body;
     const htmlElement = document.documentElement;
     const headerElement = document.querySelector('.header');
+    const navMenu = document.getElementById('main-nav');
 
-    // --- Инициализация всех компонентов ---
     initThemeSwitcher();
     initMobileMenu();
     initHeaderBehavior();
@@ -14,10 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initFormHandling();
     initCookieConsent();
 
-    /**
-     * Плавная прокрутка к якорю на странице.
-     * @param {string} targetId - ID элемента, к которому нужно прокрутить.
-     */
     function smoothScrollTo(targetId) {
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
@@ -37,15 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    /**
-     * Инициализация переключателя темы (светлая/темная).
-     */
     function initThemeSwitcher() {
         const themeToggleButtons = document.querySelectorAll('.theme-toggle');
         if (themeToggleButtons.length === 0) return;
 
         const storedTheme = localStorage.getItem('theme');
-        let currentTheme = storedTheme || 'dark'; // По умолчанию темная тема
+        let currentTheme = storedTheme || 'dark';
 
         const applyTheme = (theme) => {
             htmlElement.setAttribute('data-theme', theme);
@@ -64,12 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
         applyTheme(currentTheme);
     }
 
-    /**
-     * Инициализация мобильного меню.
-     */
+    function updateBodyScrollLock() {
+        const isAnyModalActive = document.querySelector('.modal.is-active');
+        const isMobileMenuOpen = navMenu.classList.contains('is-active');
+
+        if (isAnyModalActive || isMobileMenuOpen) {
+            htmlElement.classList.add('modal-open');
+            body.classList.add('modal-open');
+        } else {
+            htmlElement.classList.remove('modal-open');
+            body.classList.remove('modal-open');
+        }
+    }
+
     function initMobileMenu() {
         const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-        const navMenu = document.getElementById('main-nav');
         if (!mobileMenuToggle || !navMenu) return;
 
         const closeMobileMenu = () => {
@@ -77,10 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileMenuToggle.classList.remove('is-active');
             mobileMenuToggle.setAttribute('aria-expanded', 'false');
             mobileMenuToggle.setAttribute('aria-label', 'Открыть меню');
-            if (!document.querySelector('.modal.is-active')) {
-                htmlElement.classList.remove('modal-open');
-                body.classList.remove('modal-open');
-            }
+            setTimeout(updateBodyScrollLock, 200);
         };
 
         mobileMenuToggle.addEventListener('click', (event) => {
@@ -89,9 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileMenuToggle.classList.toggle('is-active', isActive);
             mobileMenuToggle.setAttribute('aria-expanded', isActive);
             mobileMenuToggle.setAttribute('aria-label', isActive ? 'Закрыть меню' : 'Открыть меню');
-
-            htmlElement.classList.toggle('modal-open', isActive);
-            body.classList.toggle('modal-open', isActive);
+            updateBodyScrollLock();
         });
 
         document.addEventListener('click', (event) => {
@@ -116,9 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /**
-     * Инициализация поведения шапки (скрытие при скролле).
-     */
     function initHeaderBehavior() {
         if (!headerElement) return;
         let lastScrollTop = 0;
@@ -138,9 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, { passive: true });
     }
 
-    /**
-     * Инициализация обработчиков для всех ссылок-якорей и кнопок прокрутки.
-     */
     function initScrollTriggers() {
         const scrollToTopBtn = document.getElementById('scroll-to-top');
         if (scrollToTopBtn) {
@@ -177,9 +167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /**
-     * Инициализация аккордеона в секции FAQ.
-     */
     function initFaqAccordion() {
         const faqItems = document.querySelectorAll('.faq__item');
         faqItems.forEach(item => {
@@ -190,9 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /**
-     * Инициализация модальных окон (успешная отправка, лайтбокс).
-     */
     function initModalWindows() {
         const modals = document.querySelectorAll('.modal');
         if (modals.length === 0) return;
@@ -200,18 +184,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const openModal = (modal) => {
             if (modal) {
                 modal.classList.add('is-active');
-                htmlElement.classList.add('modal-open');
-                body.classList.add('modal-open');
+                updateBodyScrollLock();
             }
         };
 
         const closeModal = (modal) => {
             if (modal) {
                 modal.classList.remove('is-active');
-                if (!document.querySelector('.modal.is-active') && !navMenu.classList.contains('is-active')) {
-                    htmlElement.classList.remove('modal-open');
-                    body.classList.remove('modal-open');
-                }
+                setTimeout(updateBodyScrollLock, 200);
             }
         };
 
@@ -232,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Логика лайтбокса для портфолио
         const imageLightbox = document.getElementById('image-lightbox');
         const lightboxImage = document.getElementById('lightbox-image');
         const lightboxCaption = document.getElementById('lightbox-caption');
@@ -255,9 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.openSuccessModal = () => openModal(document.getElementById('success-modal'));
     }
 
-    /**
-     * Инициализация обработки формы заказа.
-     */
     function initFormHandling() {
         const orderForm = document.getElementById('order-form');
         if (!orderForm) return;
@@ -273,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.textContent = 'Отправка...';
 
             if (typeof grecaptcha === 'undefined' || !grecaptcha.execute) {
-                alert('Ошибка: не удалось загрузить reCAPTCHA. Пожалуйста, обновите страницу.');
+                console.error('Ошибка: не удалось загрузить reCAPTCHA. Пожалуйста, обновите страницу.');
                 resetButton(submitButton);
                 return;
             }
@@ -292,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(response => {
                         if (!response.ok) {
-                            // Если HTTP-статус не 2xx, парсим ошибку и кидаем ее дальше
                             return response.json().then(err => { throw new Error(err.message || 'Ошибка сервера'); });
                         }
                         return response.json();
@@ -307,13 +282,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error('Ошибка отправки формы:', error);
-                        alert(`Ошибка отправки: ${error.message}`);
                     })
                     .finally(() => {
                         resetButton(submitButton);
                     });
                 }).catch(error => {
-                     alert('Ошибка reCAPTCHA. Пожалуйста, попробуйте еще раз.');
                      console.error('Ошибка получения токена reCAPTCHA:', error);
                      resetButton(submitButton);
                 });
@@ -354,9 +327,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    /**
-     * Инициализация баннера о согласии на использование cookie.
-     */
     function initCookieConsent() {
         const cookieBanner = document.getElementById('cookie-consent-banner');
         const acceptBtn = document.getElementById('accept-cookies');

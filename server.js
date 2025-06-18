@@ -1,7 +1,5 @@
-// server.js - Основной файл Node.js приложения для обработки обратной связи
 require('dotenv').config();
 
-// --- Импорт модулей ---
 const express = require('express');
 const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
@@ -9,11 +7,9 @@ const { URL } = require('url');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 
-// --- Инициализация Express приложения ---
 const app = express();
 const port = process.env.PORT || 3000;
 
-// --- Переменные окружения ---
 const {
     BOT_TOKEN,
     CHAT_ID,
@@ -28,28 +24,20 @@ if (process.env.NODE_ENV !== 'production') {
     allowedDomainsList.push('localhost');
 }
 
-// --- Middlewares (Промежуточное ПО) ---
-
-// 1. Парсинг тела запроса (JSON и URL-encoded)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 2. Обслуживание статических файлов (HTML, CSS, JS, изображения)
-// Все файлы из корневой директории будут доступны
 app.use(express.static(path.join(__dirname)));
 
-// 3. Rate Limiter: ограничение запросов для защиты от брутфорса
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 минут
-    max: 20, // Максимум 20 запросов с одного IP за 15 минут
+    windowMs: 15 * 60 * 1000,
+    max: 20,
     message: { success: false, message: 'Слишком много запросов с вашего IP. Пожалуйста, попробуйте позже.' },
     standardHeaders: true,
     legacyHeaders: false,
 });
 
-// 4. Проверка Referer и Honeypot
 const checkSecurity = (req, res, next) => {
-    // Проверка Referer (защита от CSRF)
     const referer = req.headers.referer;
     let refererHostname = '';
     try {
@@ -65,25 +53,20 @@ const checkSecurity = (req, res, next) => {
         return res.status(403).json({ success: false, message: 'Доступ запрещен.' });
     }
 
-    // Honeypot (ловушка для простых ботов)
     if (req.body.website) {
         console.log('Honeypot сработал. Заявка от бота проигнорирована.');
-        // Отправляем успешный ответ, чтобы сбить бота с толку
         return res.json({ success: true, message: 'Ваша заявка успешно отправлена!' });
     }
 
-    next(); // Если все проверки пройдены, передаем управление дальше
+    next();
 };
 
-// --- Функция для санитизации ввода ---
 const sanitize = (text) => {
     return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
-// --- Основной маршрут для обработки формы ---
 app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, next) => {
     try {
-        // 1. Проверка reCAPTCHA
         const recaptchaResponse = req.body.recaptcha_response;
         if (!recaptchaResponse) {
             return res.status(400).json({ success: false, message: 'reCAPTCHA токен не предоставлен.' });
@@ -98,16 +81,14 @@ app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, 
             return res.status(400).json({ success: false, message: 'Проверка на робота не пройдена.' });
         }
 
-        // 2. Подготовка и отправка сообщения в Telegram
         if (!BOT_TOKEN || !CHAT_ID) {
             console.error('Ошибка конфигурации: BOT_TOKEN или CHAT_ID не определены.');
             return res.status(500).json({ success: false, message: 'Ошибка конфигурации сервера.' });
         }
 
-        // Получение и санитизация данных из формы
         const name = sanitize(req.body.name || 'Не указано');
         const phone = sanitize(req.body.phone || 'Не указано');
-        const email = sanitize(req.body.email || ''); // Email необязателен, пустая строка ок
+        const email = sanitize(req.body.email || '');
         const service = sanitize(req.body.service || 'Не выбрана');
         const messageText = sanitize(req.body.message || 'Нет сообщения');
 
@@ -151,12 +132,10 @@ ${messageText}
         }
 
     } catch (error) {
-        next(error); // Передаем ошибку в глобальный обработчик
+        next(error);
     }
 });
 
-// --- Глобальный обработчик ошибок ---
-// Должен идти последним в цепочке app.use
 app.use((err, req, res, next) => {
     console.error('Произошла внутренняя ошибка сервера:', err);
     res.status(500).json({
@@ -165,7 +144,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// --- Запуск сервера ---
 app.listen(port, () => {
     console.log(`Сервер AV3D запущен на порту ${port}`);
     console.log(`Для локальной разработки сайт доступен по адресу: http://localhost:${port}`);

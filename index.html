@@ -22,10 +22,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome для иконок мессенджеров -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- Yandex.Metrika -->
     <script type="text/javascript">
         (function (m, e, t, r, i, k, a) {
             m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
@@ -49,7 +47,6 @@
         </div>
     </noscript>
 
-    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GX3HE67F24"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -59,7 +56,6 @@
         gtag('config', 'G-GX3HE67F24');
     </script>
 
-    <!-- Schema.org Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "http://schema.org",
@@ -158,10 +154,8 @@
 </head>
 
 <body>
-    <!-- Анимированный фон для всей страницы -->
     <div class="animated-bg">
         <div class="shapes-container">
-            <!-- Фигуры будут генерироваться и управляться JavaScript -->
         </div>
     </div>
 
@@ -185,11 +179,9 @@
                             <button class="theme-toggle" id="theme-toggle-mobile" aria-label="Переключить тему"
                                 title="Переключить тему">
                                 <span class="theme-toggle__icon-wrapper">
-                                    <!-- Иконка солнца -->
                                     <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/>
                                     </svg>
-                                    <!-- Иконка луны -->
                                     <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
                                     </svg>
@@ -201,11 +193,9 @@
                     <button class="theme-toggle header__theme-toggle--desktop" id="theme-toggle-desktop"
                         aria-label="Переключить тему" title="Переключить тему">
                         <span class="theme-toggle__icon-wrapper">
-                            <!-- Иконка солнца -->
                             <svg class="theme-toggle__icon theme-toggle__icon--sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/>
                             </svg>
-                            <!-- Иконка луны -->
                             <svg class="theme-toggle__icon theme-toggle__icon--moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
                             </svg>
@@ -445,7 +435,7 @@
                                     для функциональных деталей, корпусов.</li>
                                 <li><strong>PETG (Полиэтилентерефталат-гликоль):</strong> Прочный, гибкий, водостойкий,
                                     хорош для деталей, требующих механической прочности и химической стойкости.</li>
-                                <li><strong>TPU (Термопластичный полиуретан):</b> Гибкий и эластичный материал,
+                                <li><strong>TPU (Термопластичный полиуретан):</strong> Гибкий и эластичный материал,
                                     идеален для изготовления прокладок, амортизаторов, чехлов.</li>
                             </ul>
                         </div>
@@ -571,7 +561,7 @@
                     </ul>
                 </div>
                 <div class="footer__column">
-                    <h4>Мы в соцсетях</h4>
+                    <h4>Связь с нами</h4>
                     <div class="footer__social-links">
                         <a href="https://t.me/artbyavp" target="_blank" aria-label="Telegram" title="Telegram">
                             <i class="fab fa-telegram-plane"></i>
@@ -606,50 +596,40 @@
     <script src="https://www.google.com/recaptcha/api.js?render=6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j"></script>
     <script src="assets/js/script.js"></script>
     <script>
-        // Функция для генерации случайного числа в диапазоне
         function random(min, max) {
             return Math.random() * (max - min) + min;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const shapesContainer = document.querySelector('.shapes-container');
-            const numberOfShapes = 15; // Увеличим количество фигур
+            const numberOfShapes = 15;
 
             if (shapesContainer) {
                 for (let i = 0; i < numberOfShapes; i++) {
                     const shape = document.createElement('div');
                     shape.classList.add('shape');
 
-                    // Чередуем квадраты и треугольники
                     if (i % 2 === 0) {
                         shape.classList.add('square');
                     } else {
                         shape.classList.add('triangle');
                     }
 
-                    // Задаем случайные начальные и конечные позиции, масштабы и вращения
-                    // Начальная позиция (за пределами экрана)
                     const xStart = random(-20, 120) + 'vw';
                     const yStart = random(-20, 120) + 'vh';
 
-                    // Конечная позиция (за пределами экрана, но в другом направлении)
                     const xEnd = random(-20, 120) + 'vw';
                     const yEnd = random(-20, 120) + 'vh';
 
-                    // Начальный и конечный масштаб (увеличенный диапазон)
                     const scaleStart = random(0.5, 1.5);
                     const scaleEnd = random(0.8, 2.0);
 
-                    // Начальный и конечный угол поворота
                     const rotateStart = random(0, 360) + 'deg';
                     const rotateEnd = random(360, 720) + 'deg';
 
-                    // Длительность анимации
                     const duration = random(8, 15) + 's';
-                    // Задержка анимации
                     const delay = random(0, 5) + 's';
 
-                    // Активная непрозрачность
                     const opacityActive = random(0.3, 0.6);
 
                     shape.style.width = random(50, 150) + 'px';
