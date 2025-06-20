@@ -107,6 +107,6 @@ cd av3d
 
 -   **Автор:** [AVP-Dev](https://github.com/AVP-Dev)
 -   **Email:** [info@av3d.by](mailto:info@av3d.by)
--   **Telegram:** [@artbyavp](https://t.me/artbyavp)
+-   **Telegram:** [@avpdevcom](https://t.me/avpdevcom)
 -   **Телефон:** `+375 (29) 121-73-71`
 ```
