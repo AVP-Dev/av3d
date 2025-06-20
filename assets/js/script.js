@@ -1,184 +1,196 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    // --- Утилиты ---
+    const throttle = (func, limit) => {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    };
+
+    // --- Кэширование DOM-элементов ---
     const body = document.body;
     const htmlElement = document.documentElement;
-    const headerElement = document.querySelector('.header');
+    const header = document.querySelector('.header');
     const navMenu = document.getElementById('main-nav');
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
 
-    initThemeSwitcher();
-    initMobileMenu();
-    initHeaderBehavior();
-    initFaqAccordion();
-    initScrollTriggers();
-    initModalWindows();
-    initFormHandling();
-    initCookieConsent();
-
-    function smoothScrollTo(targetId) {
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-            let headerOffset = 0;
-            if (headerElement && getComputedStyle(headerElement).position === 'sticky') {
-                headerOffset = headerElement.offsetHeight;
-            }
-            const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset - 20;
-
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth"
-            });
-        } else {
-            console.warn(`Элемент для прокрутки с ID "${targetId}" не найден.`);
-        }
+    // --- Инициализация всех модулей ---
+    function init() {
+        initTheme();
+        initMobileMenu();
+        initHeaderBehavior();
+        initFaqAccordion();
+        initModals();
+        initSmoothScrolling();
+        initForm();
+        initCookieBanner();
+        initAnimatedShapes();
+        initScrollToTop();
     }
 
-    function initThemeSwitcher() {
-        const themeToggleButtons = document.querySelectorAll('.theme-toggle');
-        if (themeToggleButtons.length === 0) return;
+    // --- Модули ---
 
-        const storedTheme = localStorage.getItem('theme');
-        let currentTheme = storedTheme || 'dark';
+    function initTheme() {
+        const themeToggles = document.querySelectorAll('.theme-toggle');
+        if (!themeToggles.length) return;
 
         const applyTheme = (theme) => {
             htmlElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
-            currentTheme = theme;
             const label = theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему';
-            themeToggleButtons.forEach(btn => btn.setAttribute('aria-label', label));
+            themeToggles.forEach(btn => btn.setAttribute('aria-label', label));
         };
 
-        themeToggleButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                applyTheme(currentTheme === 'light' ? 'dark' : 'light');
-            });
-        });
+        const toggleTheme = () => {
+            const newTheme = htmlElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+        };
 
-        applyTheme(currentTheme);
+        themeToggles.forEach(btn => btn.addEventListener('click', toggleTheme));
+
+        const storedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(storedTheme);
     }
 
     function updateBodyScrollLock() {
-        const isAnyModalActive = document.querySelector('.modal.is-active');
-        const isMobileMenuOpen = navMenu.classList.contains('is-active');
-
-        if (isAnyModalActive || isMobileMenuOpen) {
-            htmlElement.classList.add('modal-open');
-            body.classList.add('modal-open');
-        } else {
-            htmlElement.classList.remove('modal-open');
-            body.classList.remove('modal-open');
-        }
+        const isModalOpen = document.querySelector('.modal.is-active') || navMenu.classList.contains('is-active');
+        htmlElement.classList.toggle('modal-open', isModalOpen);
+        body.classList.toggle('modal-open', isModalOpen);
     }
 
     function initMobileMenu() {
-        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
         if (!mobileMenuToggle || !navMenu) return;
 
-        const closeMobileMenu = () => {
-            navMenu.classList.remove('is-active');
-            mobileMenuToggle.classList.remove('is-active');
-            mobileMenuToggle.setAttribute('aria-expanded', 'false');
-            mobileMenuToggle.setAttribute('aria-label', 'Открыть меню');
-            setTimeout(updateBodyScrollLock, 200);
+        const toggleMenu = (forceClose = false) => {
+            const isActive = navMenu.classList.contains('is-active');
+            const open = !isActive && !forceClose;
+            navMenu.classList.toggle('is-active', open);
+            mobileMenuToggle.classList.toggle('is-active', open);
+            mobileMenuToggle.setAttribute('aria-expanded', open);
+            mobileMenuToggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+            updateBodyScrollLock();
         };
 
-        mobileMenuToggle.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const isActive = navMenu.classList.toggle('is-active');
-            mobileMenuToggle.classList.toggle('is-active', isActive);
-            mobileMenuToggle.setAttribute('aria-expanded', isActive);
-            mobileMenuToggle.setAttribute('aria-label', isActive ? 'Закрыть меню' : 'Открыть меню');
-            updateBodyScrollLock();
+        mobileMenuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
         });
 
-        document.addEventListener('click', (event) => {
-            const isClickInsideMenu = navMenu.contains(event.target);
-            const isClickOnToggle = mobileMenuToggle.contains(event.target);
-
-            if (navMenu.classList.contains('is-active') && !isClickInsideMenu && !isClickOnToggle) {
-                closeMobileMenu();
+        document.addEventListener('click', (e) => {
+            if (navMenu.classList.contains('is-active') && !navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                toggleMenu(true);
             }
         });
 
-        navMenu.addEventListener('click', (event) => {
-            if (event.target.closest('a[href^="#"]') || event.target.closest('.theme-toggle')) {
-                closeMobileMenu();
+        navMenu.addEventListener('click', (e) => {
+            if (e.target.closest('a[href^="#"]') || e.target.closest('.theme-toggle')) {
+                toggleMenu(true);
             }
         });
 
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && navMenu.classList.contains('is-active')) {
-                closeMobileMenu();
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navMenu.classList.contains('is-active')) {
+                toggleMenu(true);
             }
         });
     }
 
     function initHeaderBehavior() {
-        if (!headerElement) return;
-        let lastScrollTop = 0;
-
-        window.addEventListener('scroll', () => {
+        if (!header) return;
+        let lastScrollY = window.scrollY;
+        
+        const handleScroll = () => {
             if (body.classList.contains('modal-open')) return;
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const currentScrollY = window.scrollY;
 
-            headerElement.classList.toggle('header--scrolled', scrollTop > 50);
+            header.classList.toggle('header--scrolled', currentScrollY > 50);
 
-            if (scrollTop > lastScrollTop && scrollTop > headerElement.offsetHeight) {
-                headerElement.classList.add('header--hidden');
+            if (currentScrollY > lastScrollY && currentScrollY > header.offsetHeight) {
+                header.classList.add('header--hidden');
             } else {
-                headerElement.classList.remove('header--hidden');
+                header.classList.remove('header--hidden');
             }
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, { passive: true });
+            lastScrollY = currentScrollY < 0 ? 0 : currentScrollY;
+        };
+
+        window.addEventListener('scroll', throttle(handleScroll, 100), { passive: true });
+    }
+    
+    function initScrollToTop() {
+        if (!scrollToTopBtn) return;
+        
+        const handleScroll = () => {
+            scrollToTopBtn.classList.toggle('show', window.scrollY > 300);
+        };
+        
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        window.addEventListener('scroll', throttle(handleScroll, 200), { passive: true });
     }
 
-    function initScrollTriggers() {
-        const scrollToTopBtn = document.getElementById('scroll-to-top');
-        if (scrollToTopBtn) {
-            window.addEventListener('scroll', () => {
-                scrollToTopBtn.classList.toggle('show', window.pageYOffset > 300);
-            }, { passive: true });
-            scrollToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-        }
+    function smoothScrollTo(targetElement) {
+        if (!targetElement) return;
+        const headerOffset = header?.offsetHeight || 0;
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset - 20;
 
-        document.querySelectorAll('.order-scroll-trigger').forEach(trigger => {
-            trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                smoothScrollTo('order-form');
-
-                const serviceName = trigger.dataset.serviceName;
-                const serviceSelect = document.getElementById('service-select');
-                if (serviceName && serviceSelect) {
-                    serviceSelect.value = serviceName;
-                }
-            });
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
         });
+    }
 
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-             anchor.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href === '#' || this.classList.contains('order-scroll-trigger')) {
-                     e.preventDefault();
-                     if(href === '#') window.scrollTo({ top: 0, behavior: "smooth" });
-                } else {
-                    e.preventDefault();
-                    smoothScrollTo(href.substring(1));
-                }
-            });
+    function initSmoothScrolling() {
+        document.addEventListener('click', (e) => {
+            const anchor = e.target.closest('a[href^="#"]');
+            if (!anchor) return;
+
+            e.preventDefault();
+            const href = anchor.getAttribute('href');
+
+            if (href === '#') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            const targetElement = document.getElementById(href.substring(1));
+            smoothScrollTo(targetElement);
+            
+            const serviceName = anchor.dataset.serviceName;
+            const serviceSelect = document.getElementById('service-select');
+            if(anchor.classList.contains('order-scroll-trigger') && serviceName && serviceSelect) {
+                 serviceSelect.value = serviceName;
+            }
         });
     }
 
     function initFaqAccordion() {
-        const faqItems = document.querySelectorAll('.faq__item');
-        faqItems.forEach(item => {
-            const question = item.querySelector('.faq__question');
-            question.addEventListener('click', () => {
-                item.classList.toggle('is-active');
-            });
+        const faqGrid = document.querySelector('.faq__grid');
+        if (!faqGrid) return;
+        
+        faqGrid.addEventListener('click', (e) => {
+            const questionHeader = e.target.closest('.faq__question');
+            if (questionHeader) {
+                questionHeader.parentElement.classList.toggle('is-active');
+            }
         });
     }
 
-    function initModalWindows() {
-        const modals = document.querySelectorAll('.modal');
+    function initModals() {
+        const imageLightbox = document.getElementById('image-lightbox');
+        const successModal = document.getElementById('success-modal');
+        const modals = [imageLightbox, successModal].filter(Boolean);
+        
         if (modals.length === 0) return;
 
         const openModal = (modal) => {
@@ -191,80 +203,113 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeModal = (modal) => {
             if (modal) {
                 modal.classList.remove('is-active');
-                setTimeout(updateBodyScrollLock, 200);
+                updateBodyScrollLock();
             }
         };
-
+        
         modals.forEach(modal => {
-            modal.querySelectorAll('.close-modal-btn').forEach(btn => {
-                btn.addEventListener('click', () => closeModal(modal));
-            });
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) closeModal(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.closest('.close-modal-btn')) {
+                    closeModal(modal);
+                }
             });
         });
 
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
                 modals.forEach(modal => {
-                    if(modal.classList.contains('is-active')) closeModal(modal);
+                    if (modal.classList.contains('is-active')) closeModal(modal);
                 });
             }
         });
 
-        const imageLightbox = document.getElementById('image-lightbox');
-        const lightboxImage = document.getElementById('lightbox-image');
-        const lightboxCaption = document.getElementById('lightbox-caption');
-
-        if (imageLightbox && lightboxImage && lightboxCaption) {
-             document.querySelectorAll('.portfolio-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const src = this.dataset.fullsizeSrc;
-                    const caption = this.dataset.caption;
-                    if (src) {
-                        lightboxImage.src = src;
-                        lightboxImage.alt = caption || 'Пример работы';
-                        lightboxCaption.textContent = caption;
-                        openModal(imageLightbox);
-                    }
-                });
-            });
+        const portfolioGrid = document.querySelector('.portfolio__grid');
+        if (portfolioGrid && imageLightbox) {
+             const lightboxImage = document.getElementById('lightbox-image');
+             const lightboxCaption = document.getElementById('lightbox-caption');
+             
+             portfolioGrid.addEventListener('click', (e) => {
+                const item = e.target.closest('.portfolio-item');
+                if (!item) return;
+                
+                const src = item.dataset.fullsizeSrc;
+                const caption = item.dataset.caption;
+                
+                if (src && lightboxImage && lightboxCaption) {
+                    lightboxImage.src = src;
+                    lightboxImage.alt = caption || 'Пример работы';
+                    lightboxCaption.textContent = caption;
+                    openModal(imageLightbox);
+                }
+             });
         }
-
-        window.openSuccessModal = () => openModal(document.getElementById('success-modal'));
+        
+        window.openSuccessModal = () => openModal(successModal);
     }
+    
+    function initForm() {
+        const form = document.getElementById('order-form');
+        if (!form) return;
 
-    function initFormHandling() {
-        const orderForm = document.getElementById('order-form');
-        if (!orderForm) return;
+        const submitButton = form.querySelector('button[type="submit"]');
 
-        orderForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const form = this;
-            const submitButton = form.querySelector('button[type="submit"]');
+        const validate = () => {
+            let isValid = true;
+            form.querySelectorAll('.error-message-text').forEach(el => el.remove());
+            form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
 
-            if (!validateForm(form)) return;
+            const displayError = (input, message) => {
+                input.classList.add('error');
+                const errorEl = document.createElement('span');
+                errorEl.className = 'error-message-text';
+                errorEl.textContent = message;
+                input.parentElement.insertBefore(errorEl, input.nextSibling);
+            };
 
+            const name = form.querySelector('#name');
+            const phone = form.querySelector('#phone');
+
+            if (name.value.trim() === '') {
+                displayError(name, 'Пожалуйста, введите ваше имя.');
+                isValid = false;
+            }
+            if (phone.value.trim() === '') {
+                displayError(phone, 'Пожалуйста, введите ваш телефон.');
+                isValid = false;
+            }
+            return isValid;
+        };
+        
+        const resetButton = () => {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Отправить заявку';
+        };
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!validate()) return;
+            
             submitButton.disabled = true;
             submitButton.textContent = 'Отправка...';
 
             if (typeof grecaptcha === 'undefined' || !grecaptcha.execute) {
-                console.error('Ошибка: не удалось загрузить reCAPTCHA. Пожалуйста, обновите страницу.');
-                resetButton(submitButton);
+                console.error('Ошибка: reCAPTCHA не загружен.');
+                resetButton();
                 return;
             }
 
             grecaptcha.ready(() => {
-                grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit_form' }).then((token) => {
-                    const formData = new FormData(form);
-                    formData.append('recaptcha_response', token);
+                grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit_form' })
+                    .then(token => {
+                        const formData = new FormData(form);
+                        formData.append('recaptcha_response', token);
+                        const data = Object.fromEntries(formData.entries());
 
-                    const data = Object.fromEntries(formData.entries());
-
-                    fetch('/includes/send-telegram', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
+                        return fetch('/includes/send-telegram', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data),
+                        });
                     })
                     .then(response => {
                         if (!response.ok) {
@@ -280,67 +325,74 @@ document.addEventListener('DOMContentLoaded', function() {
                             throw new Error(data.message || 'Произошла неизвестная ошибка.');
                         }
                     })
-                    .catch(error => {
-                        console.error('Ошибка отправки формы:', error);
-                    })
-                    .finally(() => {
-                        resetButton(submitButton);
-                    });
-                }).catch(error => {
-                     console.error('Ошибка получения токена reCAPTCHA:', error);
-                     resetButton(submitButton);
-                });
+                    .catch(error => console.error('Ошибка отправки формы:', error))
+                    .finally(resetButton);
             });
         });
-
-        function validateForm(form) {
-            let isValid = true;
-            form.querySelectorAll('.error-message-text').forEach(el => el.remove());
-            form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-
-            const nameField = form.querySelector('#name');
-            const phoneField = form.querySelector('#phone');
-
-            if (nameField.value.trim() === '') {
-                displayError(nameField, 'Пожалуйста, введите ваше имя.');
-                isValid = false;
-            }
-            if (phoneField.value.trim() === '') {
-                displayError(phoneField, 'Пожалуйста, введите ваш телефон.');
-                isValid = false;
-            }
-
-            return isValid;
-        }
-
-        function displayError(inputElement, message) {
-            inputElement.classList.add('error');
-            const errorElement = document.createElement('span');
-            errorElement.className = 'error-message-text';
-            errorElement.textContent = message;
-            inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
-        }
-
-        function resetButton(button) {
-            button.disabled = false;
-            button.textContent = 'Отправить заявку';
-        }
     }
 
-    function initCookieConsent() {
-        const cookieBanner = document.getElementById('cookie-consent-banner');
-        const acceptBtn = document.getElementById('accept-cookies');
-        const COOKIE_CONSENT_KEY = 'av3d_cookie_consent_v1';
+    function initCookieBanner() {
+        const banner = document.getElementById('cookie-consent-banner');
+        if (!banner) return;
+        const acceptBtn = banner.querySelector('#accept-cookies');
+        const COOKIE_KEY = 'av3d_cookie_consent_v1';
 
-        if (!cookieBanner || !acceptBtn) return;
-
-        if (!localStorage.getItem(COOKIE_CONSENT_KEY)) {
-            cookieBanner.classList.add('show');
+        if (!localStorage.getItem(COOKIE_KEY)) {
+            banner.classList.add('show');
         }
 
         acceptBtn.addEventListener('click', () => {
-            localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
-            cookieBanner.classList.remove('show');
+            localStorage.setItem(COOKIE_KEY, 'accepted');
+            banner.classList.remove('show');
         });
     }
+    
+    function initAnimatedShapes() {
+        const container = document.querySelector('.shapes-container');
+        if (!container) return;
+
+        const config = {
+            count: 15,
+            minSize: 50,
+            maxSize: 150,
+            minDuration: 8,
+            maxDuration: 15,
+            minDelay: 0,
+            maxDelay: 5
+        };
+        
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < config.count; i++) {
+            const shape = document.createElement('div');
+            shape.className = i % 2 === 0 ? 'shape square' : 'shape triangle';
+            
+            const size = `${Math.random() * (config.maxSize - config.minSize) + config.minSize}px`;
+            const duration = `${Math.random() * (config.maxDuration - config.minDuration) + config.minDuration}s`;
+            const delay = `${Math.random() * (config.maxDelay - config.minDelay) + config.minDelay}s`;
+
+            shape.style.cssText = `
+                width: ${size};
+                height: ${size};
+                --x-start: ${Math.random() * 140 - 20}vw;
+                --y-start: ${Math.random() * 140 - 20}vh;
+                --x-end: ${Math.random() * 140 - 20}vw;
+                --y-end: ${Math.random() * 140 - 20}vh;
+                --scale-start: ${Math.random() * 1 + 0.5};
+                --scale-end: ${Math.random() * 1.2 + 0.8};
+                --rotate-start: ${Math.random() * 360}deg;
+                --rotate-end: ${Math.random() * 360 + 360}deg;
+                --opacity-active: ${Math.random() * 0.3 + 0.3};
+                animation-duration: ${duration};
+                animation-delay: ${delay};
+            `;
+            
+            fragment.appendChild(shape);
+        }
+        
+        container.appendChild(fragment);
+    }
+
+    // --- Запуск ---
+    init();
 });

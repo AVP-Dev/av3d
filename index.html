@@ -575,7 +575,12 @@
                     </div>
                 </div>
             </div>
-            <p class="footer__copy">© 2024 AV3D. Все права защищены.</p>
+            <div class="footer__bottom-line">
+                <p class="footer__copy-text">© 2024 AV3D. Все права защищены.</p>
+                <p class="footer__developer">
+                    Разработано <a href="https://avpdev.com" target="_blank" rel="noopener noreferrer" title="Сайт разработчика">avpdev.com</a>
+                </p>
+            </div>
         </div>
     </footer>
 
@@ -595,64 +600,7 @@
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js?render=6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j"></script>
     <script src="assets/js/script.js"></script>
-    <script>
-        function random(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const shapesContainer = document.querySelector('.shapes-container');
-            const numberOfShapes = 15;
-
-            if (shapesContainer) {
-                for (let i = 0; i < numberOfShapes; i++) {
-                    const shape = document.createElement('div');
-                    shape.classList.add('shape');
-
-                    if (i % 2 === 0) {
-                        shape.classList.add('square');
-                    } else {
-                        shape.classList.add('triangle');
-                    }
-
-                    const xStart = random(-20, 120) + 'vw';
-                    const yStart = random(-20, 120) + 'vh';
-
-                    const xEnd = random(-20, 120) + 'vw';
-                    const yEnd = random(-20, 120) + 'vh';
-
-                    const scaleStart = random(0.5, 1.5);
-                    const scaleEnd = random(0.8, 2.0);
-
-                    const rotateStart = random(0, 360) + 'deg';
-                    const rotateEnd = random(360, 720) + 'deg';
-
-                    const duration = random(8, 15) + 's';
-                    const delay = random(0, 5) + 's';
-
-                    const opacityActive = random(0.3, 0.6);
-
-                    shape.style.width = random(50, 150) + 'px';
-                    shape.style.height = shape.style.width;
-
-                    shape.style.setProperty('--x-start', xStart);
-                    shape.style.setProperty('--y-start', yStart);
-                    shape.style.setProperty('--x-end', xEnd);
-                    shape.style.setProperty('--y-end', yEnd);
-                    shape.style.setProperty('--scale-start', scaleStart);
-                    shape.style.setProperty('--scale-end', scaleEnd);
-                    shape.style.setProperty('--rotate-start', rotateStart);
-                    shape.style.setProperty('--rotate-end', rotateEnd);
-                    shape.style.setProperty('--opacity-active', opacityActive);
-                    shape.style.animationDuration = duration;
-                    shape.style.animationDelay = delay;
-
-                    shapesContainer.appendChild(shape);
-                }
-            }
-        });
-    </script>
-
+    
     <div id="image-lightbox" class="modal">
         <div class="modal-content image-lightbox__content">
             <span class="close-modal-btn image-lightbox__close-btn">×</span>

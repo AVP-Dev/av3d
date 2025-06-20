@@ -339,6 +339,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     animation: moveShapes linear infinite;
     filter: blur(2px);
     transform-origin: center center;
+    will-change: transform, opacity;
 }
 
 /* Различные типы фигур и их анимация */
@@ -596,15 +597,33 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     line-height: 1;
 }
 
-
-.footer__copy {
-    text-align: center;
+.footer__bottom-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
     padding-top: 20px;
     border-top: 1px solid var(--border-color);
     color: var(--placeholder-color);
     font-size: 0.85em;
 }
 
+.footer__copy-text, .footer__developer {
+    margin: 0;
+}
+
+.footer__developer a {
+    color: var(--text-color);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer__developer a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
 
 /* Плавающие кнопки */
 .floating-btn, .back-to-top {
@@ -892,5 +911,14 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
     }
 
 }
+
+@media (max-width: 500px) {
+    .footer__bottom-line {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
 
 /* Адаптивные стили для мобильных устройств */
