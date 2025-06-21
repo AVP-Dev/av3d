@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "mkdir -p dist/assets/css && mkdir -p dist/assets/js && PATH=$(npm bin):$PATH clean-css -o dist/assets/css/styles.css assets/css/styles.css && PATH=$(npm bin):$PATH uglifyjs -o dist/assets/js/script.js assets/js/script.js"
+    "build": "mkdir -p dist/assets/css && mkdir -p dist/assets/js && ./node_modules/.bin/clean-css -o dist/assets/css/styles.css assets/css/styles.css && ./node_modules/.bin/uglifyjs -o dist/assets/js/script.js assets/js/script.js"
   },
   "keywords": [
     "node.js",
