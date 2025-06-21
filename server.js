@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch'); // Удаляем эту строку
 const { URL } = require('url');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
@@ -101,6 +101,9 @@ const sanitize = (text) => {
 // --- Маршрут для обработки формы ---
 app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, next) => {
     try {
+        // Динамический импорт node-fetch
+        const fetch = (await import('node-fetch')).default;
+
         // Проверка reCAPTCHA
         const recaptchaResponse = req.body.recaptcha_response;
         if (!recaptchaResponse) {
