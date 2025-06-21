@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "mkdir -p dist/assets/css && mkdir -p dist/assets/js && ./node_modules/.bin/clean-css -o dist/assets/css/styles.css assets/css/styles.css && ./node_modules/.bin/uglifyjs -o dist/assets/js/script.js assets/js/script.js"
+    "build": "mkdir -p dist/assets/css && mkdir -p dist/assets/js"
   },
   "keywords": [
     "node.js",
@@ -27,18 +27,7 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0",
-    "clean-css-cli": "5.6.3",
-    "uglify-js": "3.19.3",
-    "clean-css": "5.3.3",
-    "commander": "7.2.0",
-    "glob": "7.2.3",
-    "source-map": "0.6.1",
-    "fs.realpath": "1.0.0",
-    "inflight": "1.0.6",
-    "once": "1.4.0",
-    "path-is-absolute": "1.0.1",
-    "wrappy": "1.0.2"
+    "nodemon": "^3.1.0"
   },
   "engines": {
     "node": ">=16.0.0"
