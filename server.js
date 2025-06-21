@@ -1,3 +1,4 @@
+// Используем 'dotenv' для загрузки переменных окружения из .env файла
 require('dotenv').config();
 
 const express = require('express');
@@ -5,6 +6,7 @@ const fetch = require('node-fetch');
 const { URL } = require('url');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet'); // Добавляем Helmet для безопасности
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,22 +20,44 @@ const {
     MESSAGE_THREAD_ID,
 } = process.env;
 
+// Проверяем наличие обязательных переменных
+if (!BOT_TOKEN || !CHAT_ID || !RECAPTCHA_SECRET_KEY) {
+    console.error("Ошибка: Необходимые переменные окружения (BOT_TOKEN, CHAT_ID, RECAPTCHA_SECRET_KEY) не установлены.");
+    process.exit(1); // Завершаем процесс, если конфигурация неполная
+}
+
 const RECAPTCHA_THRESHOLD = parseFloat(process.env.RECAPTCHA_THRESHOLD || '0.5');
 
 // --- Настройка Express ---
-// Используем встроенные middleware вместо body-parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(express.static(path.join(__dirname)));
 
 // --- Безопасность ---
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "script-src": ["'self'", "https://mc.yandex.ru", "https://www.googletagmanager.com", "https://www.google.com", "https://www.gstatic.com"],
+            "img-src": ["'self'", "data:", "https://mc.yandex.ru"],
+            "connect-src": ["'self'", "https://mc.yandex.ru", "https://www.google.com/recaptcha/"],
+            "frame-src": ["'self'", "https://www.google.com", "https://mc.yandex.com/"],
+        },
+    },
+}));
+
+// Статичные файлы должны обслуживаться после настройки безопасности
+app.use(express.static(path.join(__dirname)));
+
+
 const allowedDomainsList = ALLOWED_DOMAINS 
     ? ALLOWED_DOMAINS.split(',').map(d => d.trim()) 
     : ['av3d.by', 'www.av3d.by'];
+
 if (process.env.NODE_ENV !== 'production') {
     allowedDomainsList.push('localhost');
 }
 
+// Ограничение частоты запросов
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 минут
     max: 20,
@@ -42,10 +66,11 @@ const apiLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+// Middleware для проверки безопасности
 const checkSecurity = (req, res, next) => {
-    // Проверка Referer
     const referer = req.headers.referer;
     let refererHostname = '';
+    
     try {
         if (referer) {
             refererHostname = new URL(referer).hostname;
@@ -59,22 +84,21 @@ const checkSecurity = (req, res, next) => {
         return res.status(403).json({ success: false, message: 'Доступ запрещен.' });
     }
 
-    // Проверка Honeypot
     if (req.body.website) {
         console.log('Honeypot сработал. Заявка от бота проигнорирована.');
-        // Отправляем успешный ответ, чтобы не раскрывать боту наличие ловушки
         return res.json({ success: true, message: 'Ваша заявка успешно отправлена!' });
     }
 
     next();
 };
 
+// Функция для очистки вводимых данных
 const sanitize = (text) => {
-    if (!text) return '';
+    if (typeof text !== 'string') return '';
     return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
-// --- Обработка POST-запроса ---
+// --- Маршрут для обработки формы ---
 app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, next) => {
     try {
         // Проверка reCAPTCHA
@@ -83,39 +107,41 @@ app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, 
             return res.status(400).json({ success: false, message: 'reCAPTCHA токен не предоставлен.' });
         }
 
-        const recaptchaVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaResponse}&remoteip=${req.ip}`;
-        const recaptchaResult = await fetch(recaptchaVerifyUrl, { method: 'POST' });
+        const recaptchaVerifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
+        const recaptchaReqBody = new URLSearchParams({
+            secret: RECAPTCHA_SECRET_KEY,
+            response: recaptchaResponse,
+            remoteip: req.ip
+        });
+
+        const recaptchaResult = await fetch(recaptchaVerifyUrl, { 
+            method: 'POST',
+            body: recaptchaReqBody
+        });
+        
         const recaptchaJson = await recaptchaResult.json();
 
         if (!recaptchaJson.success || recaptchaJson.score < RECAPTCHA_THRESHOLD) {
-            console.error('Проверка reCAPTCHA не пройдена:', recaptchaJson);
-            return res.status(400).json({ success: false, message: 'Проверка на робота не пройдена.' });
-        }
-
-        if (!BOT_TOKEN || !CHAT_ID) {
-            console.error('Ошибка конфигурации: BOT_TOKEN или CHAT_ID не определены.');
-            return res.status(500).json({ success: false, message: 'Ошибка конфигурации сервера.' });
+            console.error('Проверка reCAPTCHA не пройдена:', recaptchaJson['error-codes']);
+            return res.status(401).json({ success: false, message: 'Проверка на робота не пройдена. Попробуйте обновить страницу.' });
         }
         
-        // --- Подготовка и отправка сообщения в Telegram ---
-        const name = sanitize(req.body.name);
-        const phone = sanitize(req.body.phone);
-        const email = sanitize(req.body.email);
-        const service = sanitize(req.body.service);
-        const messageText = sanitize(req.body.message);
+        // Очистка и формирование сообщения
+        const { name, contact, service, description } = req.body;
+        const telegramMessage = `
+*Новая заявка с сайта AV3D.BY*
 
-        const telegramMessage = [
-            `📌 *Новая заявка с сайта AV3D.by*`,
-            ``,
-            `👤 *Имя:* \`${name || 'Не указано'}\``,
-            `📱 *Телефон:* \`${phone || 'Не указано'}\``,
-            email ? `📧 *Email:* \`${email}\`` : '',
-            `🔧 *Услуга:* ${service || 'Не выбрана'}`,
-            ``,
-            `✉️ *Сообщение:*`,
-            `${messageText || 'Нет сообщения'}`
-        ].filter(Boolean).join('\n');
-        
+*Имя:* ${sanitize(name)}
+*Контакт:* ${sanitize(contact)}
+*Услуга:* ${sanitize(service)}
+
+*Описание:*
+\`\`\`
+${sanitize(description)}
+\`\`\`
+        `.trim();
+
+        // Отправка в Telegram
         const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
         const telegramData = {
             chat_id: CHAT_ID,
@@ -144,21 +170,29 @@ app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, 
         }
 
     } catch (error) {
-        next(error);
+        next(error); // Передаем ошибку в централизованный обработчик
     }
 });
 
-// --- Обработка ошибок ---
+// --- Обработка корневого маршрута ---
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// --- Централизованный обработчик ошибок ---
 app.use((err, req, res, next) => {
     console.error('Произошла внутренняя ошибка сервера:', err);
+    // Избегаем отправки стека ошибки клиенту в production
+    const message = process.env.NODE_ENV === 'production' 
+        ? 'Произошла внутренняя ошибка сервера. Мы уже работаем над этим.'
+        : err.message;
     res.status(500).json({
         success: false,
-        message: 'Произошла внутренняя ошибка сервера. Мы уже работаем над этим.'
+        message: message
     });
 });
 
 // --- Запуск сервера ---
 app.listen(port, () => {
-    console.log(`Сервер AV3D запущен на порту ${port}`);
-    console.log(`Для локальной разработки сайт доступен по адресу: http://localhost:${port}`);
+    console.log(`Сервер запущен на порту ${port}`);
 });
