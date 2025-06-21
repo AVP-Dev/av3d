@@ -22,6 +22,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Audit Recommendation: Font Awesome's all.min.css often contains a large amount of unused CSS. -->
+    <!-- Consider using a custom build of Font Awesome with only the icons you need, -->
+    <!-- or replacing icons with inline SVGs or modern icon libraries that allow tree-shaking -->
+    <!-- to reduce the file size and improve performance. -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <script type="text/javascript">
@@ -163,7 +167,8 @@
         <div class="container">
             <div class="header__inner">
                 <a href="#" class="logo">
-                    <img src="assets/img/logo.webp" alt="AV3D" height="40">
+                    <!-- Audit Recommendation: If the alt text duplicates visible text nearby, consider alt="" or a more concise, unique description. -->
+                    <img src="assets/img/logo.webp" alt="Логотип AV3D" height="40">
                     <span class="header__brand-text">AV3D</span>
                 </a>
 
@@ -214,6 +219,7 @@
         <section class="hero">
             <div class="container">
                 <div class="hero__content">
+                    <!-- Audit Recommendation: Ensure h1 inside article, aside, nav, or section has an explicit font-size. This is already set in styles.css -->
                     <h1 class="hero__title">Нужна деталь, прототип или уникальный подарок? AV3D: Ваша идея в реальность
                         – быстро и точно.</h1>
                     <p class="hero__subtitle">Создаём и печатаем 3D-модели любой сложности по всей Беларуси.</p>
@@ -248,6 +254,7 @@
                             </ul>
                         </div>
                         <div class="about__image">
+                            <!-- Audit Recommendation: Images like printer.webp are too large for display size. Resize them. -->
                             <img src="assets/img/printer.webp" alt="3D принтер в процессе работы" loading="lazy">
                         </div>
                     </div>
@@ -538,7 +545,7 @@
             <div class="footer__grid">
                 <div class="footer__column footer__brand">
                     <a href="#" class="logo">
-                        <img src="assets/img/logo.webp" alt="AV3D" height="40">
+                        <img src="assets/img/logo.webp" alt="Логотип AV3D" height="40">
                         <span class="header__brand-text">AV3D</span>
                     </a>
                     <p class="footer__tagline">Воплощаем ваши идеи в реальность с помощью 3D-технологий.</p>
@@ -576,7 +583,7 @@
                 </div>
             </div>
             <div class="footer__bottom-line">
-                <p class="footer__copy-text">© 2024 AV3D. Все права защищены.</p>
+                <p class="footer__copy-text">© 2025 AV3D. Все права защищены.</p>
                 <p class="footer__developer">
                     Разработано <a href="https://avpdev.com" target="_blank" rel="noopener noreferrer" title="Сайт разработчика">avpdev.com</a>
                 </p>
@@ -597,9 +604,13 @@
         </svg>
     </button>
 
+    <!-- Audit Recommendation: rocket-loader.min.js might be blocking rendering.
+         This is a Cloudflare script. Its behavior is usually controlled by Cloudflare settings.
+         Ensure Cloudflare's Rocket Loader is configured for optimal performance if this script is still blocking. -->
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j"></script>
-    <script src="assets/js/script.js"></script>
+    <script async src="https://www.google.com/recaptcha/api.js?render=6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j"></script>
+    <!-- Added 'defer' attribute to ensure script.js executes after DOM is fully parsed and is non-blocking. -->
+    <script src="assets/js/script.js" defer></script>
     
     <div id="image-lightbox" class="modal">
         <div class="modal-content image-lightbox__content">

@@ -105,7 +105,7 @@ app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, 
         const messageText = sanitize(req.body.message);
 
         const telegramMessage = [
-            `📌 *Новая заявка с сайта AV3D*`,
+            `📌 *Новая заявка с сайта AV3D.by*`,
             ``,
             `👤 *Имя:* \`${name || 'Не указано'}\``,
             `📱 *Телефон:* \`${phone || 'Не указано'}\``,

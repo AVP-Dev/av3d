@@ -4,9 +4,9 @@
     --text-color: #cbd5e0;
     --heading-color: #e2e8f0;
     --card-bg-color: #2d3748;
-    --border-color: #4a5568;
-    --primary-color: #5a67d8;
-    --primary-hover-color: #434CA2;
+    /* Updated primary color for better contrast in dark theme based on audit recommendations */
+    --primary-color: #4C51BF; /* Original: #5a67d8 */
+    --primary-hover-color: #3f44a3; /* Adjusted hover for new primary */
     --secondary-color: #63b3ed;
     --shadow-small: 0 4px 12px rgba(0, 0, 0, 0.2);
     --shadow-medium: 0 10px 20px rgba(0, 0, 0, 0.2);
@@ -18,7 +18,7 @@
     --success-color: #48bb78;
     --error-color: #fc8181;
     --modal-overlay-bg: rgba(0, 0, 0, 0.7);
-    --primary-color-rgb: 90, 103, 216;
+    --primary-color-rgb: 76, 81, 191; /* Adjusted RGB for new primary */
     --secondary-color-rgb: 99, 179, 237;
     --bg-color-rgb: 26, 32, 44;
     --card-bg-color-rgb: 45, 55, 72;
@@ -31,8 +31,9 @@
     --heading-color: #1a202c;
     --card-bg-color: #ffffff;
     --border-color: #e2e8f0;
-    --primary-color: #667eea;
-    --primary-hover-color: #5a67d8;
+    /* Updated primary color for better contrast in light theme based on audit recommendations */
+    --primary-color: #3B82F6; /* Original: #667eea */
+    --primary-hover-color: #2563EB; /* Adjusted hover for new primary */
     --secondary-color: #3182ce;
     --shadow-small: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-medium: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -44,7 +45,7 @@
     --success-color: #38a169;
     --error-color: #e53e3e;
     --modal-overlay-bg: rgba(0, 0, 0, 0.5);
-    --primary-color-rgb: 102, 126, 234;
+    --primary-color-rgb: 59, 130, 246; /* Adjusted RGB for new primary */
     --secondary-color-rgb: 49, 130, 206;
     --bg-color-rgb: 247, 250, 252;
     --card-bg-color-rgb: 255, 255, 255;
@@ -419,6 +420,7 @@ html[data-theme="light"] .hero__subtitle { color: var(--text-color); }
 .service-card__list li { position: relative; padding-left: 22px; margin-bottom: 5px; font-size: 0.9em; }
 .service-card__list li::before { content: '•'; color: var(--primary-color); position: absolute; left: 5px; top: 0; font-weight: bold; }
 .service-card__bottom { margin-top: auto; padding-top: 15px; text-align: center; }
+/* Audit Recommendation: Improve contrast for price text. The primary-color variable was adjusted to be darker. */
 .service-card__price { font-size: 1.1em; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; }
 
 

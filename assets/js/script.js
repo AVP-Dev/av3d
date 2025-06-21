@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const applyTheme = (theme) => {
             htmlElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
-            const label = theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему';
+            const label = theme === 'dark' ? 'Сменить тему на светлую' : 'Сменить тему на темную';
             themeToggles.forEach(btn => btn.setAttribute('aria-label', label));
         };
 
@@ -152,36 +152,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function initSmoothScrolling() {
         document.addEventListener('click', (e) => {
-            const anchor = e.target.closest('a[href^="#"]');
-            if (!anchor) return;
+            const trigger = e.target.closest('a[href^="#"], .order-scroll-trigger');
+            if (!trigger) return;
 
             e.preventDefault();
-            const href = anchor.getAttribute('href');
 
-            if (href === '#') {
+            let targetId;
+
+            if (trigger.tagName === 'A' && trigger.getAttribute('href')) {
+                targetId = trigger.getAttribute('href');
+            } else if (trigger.classList.contains('order-scroll-trigger')) {
+                targetId = '#order';
+            }
+
+            if (!targetId) return;
+
+            if (targetId === '#') {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             }
 
-            const targetElement = document.getElementById(href.substring(1));
+            const targetElement = document.getElementById(targetId.substring(1));
             smoothScrollTo(targetElement);
             
-            const serviceName = anchor.dataset.serviceName;
+            const serviceName = trigger.dataset.serviceName;
             const serviceSelect = document.getElementById('service-select');
-            if(anchor.classList.contains('order-scroll-trigger') && serviceName && serviceSelect) {
+            if(trigger.classList.contains('order-scroll-trigger') && serviceName && serviceSelect) {
                  serviceSelect.value = serviceName;
             }
         });
     }
 
+    /**
+     * ИСПРАВЛЕННЫЙ АККОРДЕОН
+     * При открытии одного элемента, закрывает все остальные.
+     */
     function initFaqAccordion() {
         const faqGrid = document.querySelector('.faq__grid');
         if (!faqGrid) return;
-        
+
+        const allItems = faqGrid.querySelectorAll('.faq__item');
+
         faqGrid.addEventListener('click', (e) => {
             const questionHeader = e.target.closest('.faq__question');
-            if (questionHeader) {
-                questionHeader.parentElement.classList.toggle('is-active');
+            if (!questionHeader) return;
+
+            const currentItem = questionHeader.parentElement;
+            const wasActive = currentItem.classList.contains('is-active');
+
+            // Сначала закрываем все элементы
+            allItems.forEach(item => {
+                item.classList.remove('is-active');
+            });
+
+            // Если элемент не был активен, то открываем его
+            // (это позволяет закрывать уже открытый элемент повторным кликом)
+            if (!wasActive) {
+                currentItem.classList.add('is-active');
             }
         });
     }
