@@ -52,13 +52,15 @@ app.use(express.static(path.join(__dirname)));
 
 
 const allowedDomainsList = ALLOWED_DOMAINS 
-    ? ALLOWED_DOMAINS.split(',').map(d => d.trim()) 
+    ? ALLOWED_DOMAINS.split(',').map(d => d.trim().toLowerCase()) // Added .toLowerCase() and .trim()
     : ['av3d.by', 'www.av3d.by'];
 
 if (NODE_ENV !== 'production') { // Use NODE_ENV for environment specific settings
     allowedDomainsList.push('localhost');
     console.log("Development mode detected. 'localhost' added to ALLOWED_DOMAINS.");
 }
+
+console.log("Сервер запущен с ALLOWED_DOMAINS:", allowedDomainsList); // Log allowed domains on startup
 
 // Ограничение частоты запросов
 const apiLimiter = rateLimit({
@@ -77,24 +79,36 @@ const checkSecurity = (req, res, next) => {
     const referer = req.headers.referer;
     let refererHostname = '';
     
+    console.log("Получен запрос на /includes/send-telegram");
+    console.log("Referer header:", referer); // Log the actual referer header
+
     try {
         if (referer) {
-            refererHostname = new URL(referer).hostname;
+            // Use URL object to parse the hostname from referer
+            refererHostname = new URL(referer).hostname.toLowerCase(); // Convert to lowercase for consistent comparison
         }
     } catch (e) {
         console.warn('Некорректный Referer:', referer, e.message);
+        // If referer is malformed or missing, treat as forbidden in production
+        if (NODE_ENV === 'production') {
+            return res.status(403).json({ success: false, message: 'Доступ запрещен. Некорректный или отсутствующий Referer.' });
+        }
     }
     
-    // Allow requests without a referer if not in production, for easier testing.
-    // In production, a missing referer should be treated with caution.
+    // In production, a missing referer should still be treated with caution.
+    // If no referer is sent at all (e.g., direct access or strict browser settings),
+    // and we are in production, reject it.
     if (NODE_ENV === 'production' && !refererHostname) {
         console.error('Доступ запрещен: Отсутствует Referer в Production режиме.');
         return res.status(403).json({ success: false, message: 'Доступ запрещен. Отсутствует Referer.' });
     }
 
+    console.log("Parsed Referer Hostname:", refererHostname);
+    console.log("Allowed Domains List:", allowedDomainsList);
+
     if (!allowedDomainsList.includes(refererHostname)) {
         console.error(`Доступ запрещен: Несанкционированный referer '${refererHostname}'`);
-        return res.status(403).json({ success: false, message: `Доступ запрещен. Некорректный домен: ${refererHostname}` });
+        return res.status(403).json({ success: false, message: `Доступ запрещен. Некорректный домен: ${refererHostname}. Проверьте ALLOWED_DOMAINS.` });
     }
 
     // Honeypot check
