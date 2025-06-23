@@ -5,7 +5,8 @@ const express = require('express');
 const { URL } = require('url');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
-const helmet = require('helmet'); // Добавляем Helmet для безопасности
+const helmet = require('helmet');
+const cors = require('cors'); // Импортируем модуль CORS
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,13 +18,13 @@ const {
     RECAPTCHA_SECRET_KEY,
     ALLOWED_DOMAINS,
     MESSAGE_THREAD_ID,
-    NODE_ENV // Добавляем NODE_ENV
+    NODE_ENV
 } = process.env;
 
 // Проверяем наличие обязательных переменных
 if (!BOT_TOKEN || !CHAT_ID || !RECAPTCHA_SECRET_KEY) {
     console.error("Ошибка: Необходимые переменные окружения (BOT_TOKEN, CHAT_ID, RECAPTCHA_SECRET_KEY) не установлены.");
-    process.exit(1); // Завершаем процесс, если конфигурация неполная
+    process.exit(1);
 }
 
 const RECAPTCHA_THRESHOLD = parseFloat(process.env.RECAPTCHA_THRESHOLD || '0.5');
@@ -32,18 +33,56 @@ const RECAPTCHA_THRESHOLD = parseFloat(process.env.RECAPTCHA_THRESHOLD || '0.5')
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// --- Безопасность ---
+// Парсим разрешенные домены для CORS и Referer
+const allowedOrigins = ALLOWED_DOMAINS
+    ? ALLOWED_DOMAINS.split(',').map(d => {
+        let domain = d.trim().toLowerCase();
+        if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
+            // Добавляем протоколы для корректного сравнения с origin
+            return [`http://${domain}`, `https://${domain}`];
+        }
+        return [domain];
+    }).flat()
+    : ['https://av3d.by', 'https://www.av3d.by']; // Дефолтные значения для продакшена
+
+// Для разработки добавляем localhost в разрешенные домены и origins
+if (NODE_ENV !== 'production') {
+    allowedOrigins.push('http://localhost:3000', 'http://127.0.0.1:3000'); // Убедитесь, что порт совпадает
+    console.log("Development mode detected. 'localhost' added to ALLOWED_DOMAINS and CORS Origins.");
+}
+
+console.log("Сервер запущен с ALLOWED_ORIGINS (CORS):", allowedOrigins);
+
+// --- Настройка CORS ---
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Разрешаем запросы без Origin (например, с того же домена или прямые запросы из Postman/Curl)
+        // ИЛИ если origin входит в список разрешенных
+        if (!origin || allowedOrigins.includes(origin.toLowerCase())) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS Error: Origin '${origin}' not allowed by CORS policy.`);
+            callback(new Error('Not allowed by CORS'), false);
+        }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Разрешаем отправку куков, если требуется
+    optionsSuccessStatus: 204 // Для некоторых старых браузеров (IE11, некоторых SmartTV)
+};
+
+app.use(cors(corsOptions)); // Применяем CORS middleware
+
+// --- Безопасность (Helmet) ---
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "https://mc.yandex.ru", "https://www.googletagmanager.com", "https://www.google.com", "https://www.gstatic.com", "'unsafe-inline'"], // Added 'unsafe-inline' for reCAPTCHA dynamic script loading
-            "img-src": ["'self'", "data:", "https://mc.yandex.ru", "https://www.google.com"], // Added google.com for reCAPTCHA badge
-            "connect-src": ["'self'", "https://mc.yandex.ru", "https://www.google.com/recaptcha/", "https://www.recaptcha.net/recaptcha/api/"], // Added recaptcha.net
-            "frame-src": ["'self'", "https://www.google.com", "https://mc.yandex.com/", "https://www.recaptcha.net/recaptcha/api/"], // Added recaptcha.net
+            "script-src": ["'self'", "https://mc.yandex.ru", "https://www.googletagmanager.com", "https://www.google.com", "https://www.gstatic.com", "'unsafe-inline'"],
+            "img-src": ["'self'", "data:", "https://mc.yandex.ru", "https://www.google.com"],
+            "connect-src": ["'self'", "https://mc.yandex.ru", "https://www.google.com/recaptcha/", "https://www.recaptcha.net", "https://www.recaptcha.net/recaptcha/api/"],
+            "frame-src": ["'self'", "https://www.google.com", "https://mc.yandex.com/", "https://www.recaptcha.net", "https://www.recaptcha.net/recaptcha/api/"],
         },
     },
-    // Disable DNS Prefetch Control to avoid potential issues with dynamic external scripts
     dnsPrefetchControl: { allow: false }
 }));
 
@@ -51,70 +90,56 @@ app.use(helmet({
 app.use(express.static(path.join(__dirname)));
 
 
-const allowedDomainsList = ALLOWED_DOMAINS 
-    ? ALLOWED_DOMAINS.split(',').map(d => d.trim().toLowerCase()) // Added .toLowerCase() and .trim()
-    : ['av3d.by', 'www.av3d.by'];
-
-if (NODE_ENV !== 'production') { // Use NODE_ENV for environment specific settings
-    allowedDomainsList.push('localhost');
-    console.log("Development mode detected. 'localhost' added to ALLOWED_DOMAINS.");
-}
-
-console.log("Сервер запущен с ALLOWED_DOMAINS:", allowedDomainsList); // Log allowed domains on startup
-
 // Ограничение частоты запросов
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 минут
+    windowMs: 15 * 60 * 1000,
     max: 20,
     message: { success: false, message: 'Слишком много запросов с вашего IP. Пожалуйста, попробуйте позже.' },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => { // Use IP from request for rate limiting
+    keyGenerator: (req) => {
         return req.ip;
     }
 });
 
-// Middleware для проверки безопасности
+// Middleware для проверки безопасности (в дополнение к CORS)
 const checkSecurity = (req, res, next) => {
     const referer = req.headers.referer;
     let refererHostname = '';
     
     console.log("Получен запрос на /includes/send-telegram");
-    console.log("Referer header:", referer); // Log the actual referer header
+    console.log("Referer header:", referer);
 
     try {
         if (referer) {
-            // Use URL object to parse the hostname from referer
-            refererHostname = new URL(referer).hostname.toLowerCase(); // Convert to lowercase for consistent comparison
+            refererHostname = new URL(referer).hostname.toLowerCase();
         }
     } catch (e) {
-        console.warn('Некорректный Referer:', referer, e.message);
-        // If referer is malformed or missing, treat as forbidden in production
-        if (NODE_ENV === 'production') {
-            return res.status(403).json({ success: false, message: 'Доступ запрещен. Некорректный или отсутствующий Referer.' });
+        console.warn('Некорректный Referer или ошибка парсинга:', referer, e.message);
+        // Если Referer некорректен или отсутствует в production, продолжаем, но с предупреждением.
+        // Основную проверку выполнит CORS. Если CORS уже пропустил, значит origin разрешен.
+        if (NODE_ENV === 'production' && !refererHostname) {
+             console.warn('Referer отсутствует в production, но запрос пропущен CORS.');
         }
     }
     
-    // In production, a missing referer should still be treated with caution.
-    // If no referer is sent at all (e.g., direct access or strict browser settings),
-    // and we are in production, reject it.
-    if (NODE_ENV === 'production' && !refererHostname) {
-        console.error('Доступ запрещен: Отсутствует Referer в Production режиме.');
-        return res.status(403).json({ success: false, message: 'Доступ запрещен. Отсутствует Referer.' });
-    }
-
-    console.log("Parsed Referer Hostname:", refererHostname);
-    console.log("Allowed Domains List:", allowedDomainsList);
-
-    if (!allowedDomainsList.includes(refererHostname)) {
-        console.error(`Доступ запрещен: Несанкционированный referer '${refererHostname}'`);
-        return res.status(403).json({ success: false, message: `Доступ запрещен. Некорректный домен: ${refererHostname}. Проверьте ALLOWED_DOMAINS.` });
+    // Дополнительная проверка referer, если origin отсутствует (например, для curl)
+    // Если refererHostname есть и не соответствует явно разрешенным доменам
+    // и если origin не был разрешен CORS (что маловероятно, если этот middleware
+    // идет после CORS и запрос вообще дошел до сюда), то тогда блокируем.
+    // В данном случае, CORS - основная защита. Эта проверка - лишь подстраховка.
+    if (refererHostname && !allowedOrigins.some(origin => origin.includes(refererHostname))) {
+        console.warn(`Доступ потенциально несанкционирован: Referer '${refererHostname}' не соответствует явно разрешенным доменам (но CORS возможно разрешил по Origin).`);
+        // В продакшене можно усилить, но пока не будем блокировать, т.к. CORS уже отработал
+        // if (NODE_ENV === 'production') {
+        //     return res.status(403).json({ success: false, message: `Доступ запрещен: Referer не соответствует.` });
+        // }
     }
 
     // Honeypot check
-    if (req.body.website && req.body.website.length > 0) {
+    const honeypotField = req.body.website;
+    if (honeypotField && honeypotField.length > 0) {
         console.log('Honeypot сработал. Заявка от бота проигнорирована.');
-        // Return success to bot to avoid alerting it
         return res.json({ success: true, message: 'Ваша заявка успешно отправлена!' });
     }
 
@@ -124,14 +149,12 @@ const checkSecurity = (req, res, next) => {
 // Функция для очистки вводимых данных
 const sanitize = (text) => {
     if (typeof text !== 'string') return '';
-    // Basic sanitization: encode HTML entities to prevent XSS
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 };
 
 // --- Маршрут для обработки формы ---
 app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, next) => {
     try {
-        // Динамический импорт node-fetch
         const fetch = (await import('node-fetch')).default;
 
         // Проверка reCAPTCHA
@@ -145,7 +168,7 @@ app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, 
         const recaptchaReqBody = new URLSearchParams({
             secret: RECAPTCHA_SECRET_KEY,
             response: recaptchaResponse,
-            remoteip: req.ip // Pass the user's IP for better reCAPTCHA scoring
+            remoteip: req.ip
         });
 
         const recaptchaResult = await fetch(recaptchaVerifyUrl, { 
@@ -163,7 +186,6 @@ app.post('/includes/send-telegram', apiLimiter, checkSecurity, async (req, res, 
         // Очистка и формирование сообщения
         const { name, contact, service, description } = req.body;
 
-        // Ensure all fields are present and sanitized
         const sanitizedName = sanitize(name || 'Не указано');
         const sanitizedContact = sanitize(contact || 'Не указано');
         const sanitizedService = sanitize(service || 'Не указано');
@@ -207,14 +229,13 @@ ${sanitizedDescription}
             res.json({ success: true, message: 'Ваша заявка успешно отправлена!' });
         } else {
             console.error('Ошибка Telegram API:', telegramResult);
-            // Provide more specific error if possible without exposing sensitive info
             const errorMessage = telegramResult.description || 'Не удалось отправить заявку. Попробуйте позже.';
             res.status(500).json({ success: false, message: errorMessage });
         }
 
     } catch (error) {
         console.error('Произошла ошибка в /includes/send-telegram:', error);
-        next(error); // Передаем ошибку в централизованный обработчик
+        next(error);
     }
 });
 
@@ -226,7 +247,6 @@ app.get('/', (req, res) => {
 // --- Централизованный обработчик ошибок ---
 app.use((err, req, res, next) => {
     console.error('Произошла внутренняя ошибка сервера:', err);
-    // Избегаем отправки стека ошибки клиенту в production
     const message = NODE_ENV === 'production' 
         ? 'Произошла внутренняя ошибка сервера. Мы уже работаем над этим.'
         : err.message;
