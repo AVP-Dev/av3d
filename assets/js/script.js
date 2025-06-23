@@ -302,11 +302,18 @@ document.addEventListener('DOMContentLoaded', function() {
             script.src = 'https://www.google.com/recaptcha/api.js?render=6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j';
             script.async = true;
             script.defer = true;
+            script.onerror = () => {
+                console.error("Failed to load reCAPTCHA script.");
+                formStatus.textContent = 'Ошибка загрузки reCAPTCHA. Пожалуйста, проверьте ваше соединение.';
+                formStatus.className = 'form-status error';
+                submitButton.disabled = true; // Disable form if reCAPTCHA fails to load
+            };
             document.head.appendChild(script);
             recaptchaLoaded = true;
         };
     
-        ['focus', 'input'].forEach(eventType => {
+        // Load reCAPTCHA script on first interaction with the form
+        ['focusin', 'input', 'mouseover'].forEach(eventType => {
             form.addEventListener(eventType, loadRecaptcha, { once: true, passive: true });
         });
     
@@ -330,53 +337,77 @@ document.addEventListener('DOMContentLoaded', function() {
             const isDescriptionValid = validateField(descriptionField, 'Пожалуйста, опишите ваш заказ.');
             return isNameValid && isContactValid && isServiceValid && isDescriptionValid;
         };
+
+        // Add event listeners for instant validation feedback
+        [nameField, contactField, serviceSelect, descriptionField].forEach(field => {
+            field.addEventListener('input', () => validateField(field, 'Это поле обязательно для заполнения.'));
+            field.addEventListener('blur', () => validateField(field, 'Это поле обязательно для заполнения.'));
+        });
     
-        form.addEventListener('submit', function (e) {
+        form.addEventListener('submit', async function (e) {
             e.preventDefault();
-            if (!validateForm()) return;
+            if (!validateForm()) {
+                formStatus.textContent = 'Пожалуйста, заполните все обязательные поля.';
+                formStatus.className = 'form-status error';
+                return;
+            }
     
             submitButton.disabled = true;
             submitButtonText.style.display = 'none';
             loader.style.display = 'block';
             formStatus.textContent = '';
     
-            grecaptcha.ready(function () {
-                grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit' }).then(async function (token) {
-                    const formData = new FormData(form);
-                    formData.append('recaptcha_response', token);
-    
-                    const data = {};
-                    formData.forEach((value, key) => { data[key] = value; });
-                    
-                    try {
-                        const response = await fetch('/includes/send-telegram', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(data)
-                        });
-    
-                        const result = await response.json();
-    
-                        if (result.success) {
-                            formStatus.textContent = result.message;
-                            formStatus.className = 'form-status success';
-                            form.reset();
-                            window.openSuccessModal();
-                        } else {
-                            formStatus.textContent = result.message || 'Произошла ошибка.';
-                            formStatus.className = 'form-status error';
-                        }
-                    } catch (error) {
-                        console.error('Ошибка:', error);
-                        formStatus.textContent = 'Ошибка сети. Попробуйте снова.';
-                        formStatus.className = 'form-status error';
-                    } finally {
-                        submitButton.disabled = false;
-                        submitButtonText.style.display = 'inline';
-                        loader.style.display = 'none';
-                    }
+            try {
+                if (typeof grecaptcha === 'undefined' || !grecaptcha.ready) {
+                    throw new Error("reCAPTCHA is not loaded or ready. Please try again.");
+                }
+
+                const token = await new Promise((resolve, reject) => {
+                    grecaptcha.ready(function () {
+                        grecaptcha.execute('6LdbRz0rAAAAANcGVE0I-3t82dtJ2elymdIxIi1j', { action: 'submit' })
+                            .then(resolve)
+                            .catch(reject);
+                    });
                 });
-            });
+    
+                const formData = new FormData(form);
+                formData.append('recaptcha_response', token);
+    
+                const data = {};
+                formData.forEach((value, key) => { data[key] = value; });
+                
+                const response = await fetch('/includes/send-telegram', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+    
+                const result = await response.json();
+    
+                if (result.success) {
+                    formStatus.textContent = result.message;
+                    formStatus.className = 'form-status success';
+                    form.reset();
+                    // Manually trigger visual clearing of error states
+                    [nameField, contactField, serviceSelect, descriptionField].forEach(field => {
+                        field.classList.remove('error');
+                        field.nextElementSibling.style.display = 'none';
+                    });
+                    window.openSuccessModal();
+                } else {
+                    formStatus.textContent = result.message || 'Произошла неизвестная ошибка.';
+                    formStatus.className = 'form-status error';
+                    console.error('Server response error:', result);
+                }
+            } catch (error) {
+                console.error('Ошибка при отправке формы:', error);
+                formStatus.textContent = `Ошибка: ${error.message || 'Что-то пошло не так. Попробуйте снова.'}`;
+                formStatus.className = 'form-status error';
+            } finally {
+                submitButton.disabled = false;
+                submitButtonText.style.display = 'inline';
+                loader.style.display = 'none';
+            }
         });
     }
 
