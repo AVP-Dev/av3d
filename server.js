@@ -77,7 +77,8 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "https://mc.yandex.ru", "https://www.googletagmanager.com", "https://www.google.com", "https://www.gstatic.com", "'unsafe-inline'"],
+            // ИЗМЕНЕНИЕ: Добавлен источник для скриптов Cloudflare
+            "script-src": ["'self'", "https://mc.yandex.ru", "https://www.googletagmanager.com", "https://www.google.com", "https://www.gstatic.com", "https://static.cloudflareinsights.com", "'unsafe-inline'"],
             "img-src": ["'self'", "data:", "https://mc.yandex.ru", "https://www.google.com"],
             "connect-src": ["'self'", "https://mc.yandex.ru", "https://www.google.com/recaptcha/", "https://www.recaptcha.net", "https://www.recaptcha.net/recaptcha/api/"],
             "frame-src": ["'self'", "https://www.google.com", "https://mc.yandex.com/", "https://www.recaptcha.net", "https://www.recaptcha.net/recaptcha/api/"],
