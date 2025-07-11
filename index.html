@@ -14,18 +14,15 @@
     <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
 
-    <!-- Preconnect to critical third-party origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.google.com">
     <link rel="preconnect" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://mc.yandex.ru">
 
-    <!-- Preload critical assets -->
     <link rel="preload" href="assets/css/styles.css" as="style">
     <link rel="preload" href="assets/js/script.js" as="script">
     
-    <!-- ИЗМЕНЕНИЕ: Убран preload для шрифтов, оставлена только прямая загрузка стилей -->
     <link rel="stylesheet" href="assets/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
     
@@ -141,7 +138,6 @@
                 </a>
 
                 <div class="header__right">
-                    <!-- FIX: Desktop navigation is back inside the header -->
                     <nav class="nav--desktop">
                         <a href="#about" class="nav__link">О нас</a>
                         <a href="#services" class="nav__link">Услуги</a>
@@ -171,7 +167,6 @@
         </div>
     </header>
     
-    <!-- FIX: Mobile navigation is a separate element outside the header -->
     <nav class="nav--mobile" id="main-nav">
         <a href="#about" class="nav__link">О нас</a>
         <a href="#services" class="nav__link">Услуги</a>
@@ -476,6 +471,11 @@
 
     <footer class="footer">
         <div class="container">
+            <div class="footer__legal-links">
+                <a href="/privacy-policy.html" target="_blank">Политика конфиденциальности</a>
+                <span class="footer__legal-separator">|</span>
+                <a href="/public-offer.html" target="_blank">Публичный договор (оферта)</a>
+            </div>
             <p>&copy; 2023-2025 AV3D. Все права защищены. УНП MA6914161.</p>
             <div class="footer__creator">
                 <span>Разработка и поддержка:</span>
@@ -484,7 +484,6 @@
                     <span>avpdev.com</span>
                 </a>
                 <a href="https://t.me/avpdevcom" target="_blank" rel="noopener noreferrer" class="creator-link" aria-label="Telegram создателя">
-                    <!-- FIX: Correct Telegram Icon SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -525,7 +524,6 @@
     </div>
 
     <script src="assets/js/script.js" defer></script>
-    <!-- G-recaptcha script is loaded dynamically in script.js -->
 </body>
 
 </html>

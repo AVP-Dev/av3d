@@ -1,6 +1,3 @@
-/* --- Цветовая палитра и переменные --- */
-
-/* Темная тема (по умолчанию) */
 :root {
     --bg-color: #1a202c;
     --text-color: #cbd5e0;
@@ -26,7 +23,6 @@
     --card-bg-color-rgb: 45, 55, 72;
 }
 
-/* Светлая тема */
 [data-theme="light"] {
     --bg-color: #f7fafc;
     --text-color: #4a5568;
@@ -52,7 +48,6 @@
     --card-bg-color-rgb: 255, 255, 255;
 }
 
-/* --- Базовые стили --- */
 *,
 *::before,
 *::after {
@@ -123,9 +118,6 @@ h4 { font-size: 1.2rem; }
 p { margin-bottom: 1em; }
 ul { list-style: none; }
 
-/* --- Общие компоненты --- */
-
-/* Кнопки */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -139,13 +131,13 @@ ul { list-style: none; }
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid transparent;
     box-shadow: var(--shadow-small);
-    white-space: nowrap; /* Убедимся, что текст не переносится неожиданно */
+    white-space: nowrap;
 }
 
 .btn--primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
-    color: var(--button-text-color); /* Начальный цвет текста из темы */
+    color: var(--button-text-color);
 }
 
 .btn--primary:hover {
@@ -153,23 +145,22 @@ ul { list-style: none; }
     border-color: var(--primary-hover-color);
     box-shadow: var(--shadow-medium);
     transform: translateY(-3px);
-    color: #ffffff; /* Принудительно белый текст для основных кнопок при наведении */
+    color: #ffffff;
 }
 
 .btn--outline {
     background-color: transparent;
-    color: var(--primary-color); /* Начальный цвет текста - primary-color */
+    color: var(--primary-color);
     border-color: var(--primary-color);
 }
 
 .btn--outline:hover {
     background-color: var(--primary-color);
-    color: #ffffff; /* Принудительно белый текст для кнопок-контуров при наведении, так как они заливаются основным цветом */
+    color: #ffffff;
     box-shadow: var(--shadow-medium);
     transform: translateY(-3px);
 }
 
-/* Кнопка "Наверх" */
 .back-to-top {
     position: fixed;
     bottom: 20px;
@@ -198,7 +189,6 @@ ul { list-style: none; }
     transform: translateY(0);
 }
 
-/* --- Основная область контента --- */
 main {
     flex-grow: 1;
     padding: 0;
@@ -206,7 +196,6 @@ main {
     z-index: 1;
 }
 
-/* Секции */
 .section {
     padding: 60px 0;
     background-color: transparent;
@@ -224,7 +213,6 @@ main {
     margin-top: 40px;
 }
 
-/* --- Шапка --- */
 .header {
     background-color: rgba(var(--bg-color-rgb), 0.95);
     padding: 15px 0;
@@ -266,8 +254,6 @@ main {
     gap: 18px;
 }
 
-/* --- Навигация --- */
-/* Общие стили для ссылок */
 .nav__link {
     color: var(--text-color);
     font-weight: 500;
@@ -292,14 +278,12 @@ main {
     width: 100%;
 }
 
-/* Навигация для десктопа */
 .nav--desktop {
     display: flex;
     align-items: center;
     gap: 25px;
 }
 
-/* Выезжающая панель для мобильных */
 .nav--mobile {
     position: fixed;
     top: 0;
@@ -311,13 +295,11 @@ main {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: -10px 0 30px rgba(0,0,0,0.2);
-    
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 80px 30px 30px;
     gap: 0;
-    
     transform: translateX(100%);
     visibility: hidden;
     transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), visibility 0s linear 0.4s;
@@ -330,7 +312,6 @@ main {
     transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Стили для элементов внутри мобильной панели */
 .nav--mobile .nav__link {
     width: 100%;
     padding: 15px 0;
@@ -363,8 +344,6 @@ main {
     gap: 12px;
 }
 
-
-/* Переключатель мобильного меню */
 .mobile-menu-toggle {
     display: none;
     background: none;
@@ -372,7 +351,7 @@ main {
     cursor: pointer;
     padding: 10px;
     position: relative;
-    z-index: 1002; /* Must be above the nav panel and header */
+    z-index: 1002;
 }
 .mobile-menu-toggle span {
     display: block;
@@ -390,7 +369,6 @@ main {
 .mobile-menu-toggle.is-active span:nth-child(2) { opacity: 0; }
 .mobile-menu-toggle.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
-/* Переключатель темы */
 .theme-toggle {
     background: none;
     border: none;
@@ -428,9 +406,6 @@ html[data-theme="light"] .theme-toggle__icon--moon { opacity: 0; transform: rota
 html[data-theme="dark"] .theme-toggle__icon--sun { opacity: 0; transform: rotate(90deg); }
 html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotate(0deg); }
 
-/* --- Стили секций --- */
-
-/* Секция "Герой" */
 .hero {
     padding: 100px 0;
     text-align: center;
@@ -462,7 +437,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     flex-wrap: wrap;
 }
 
-/* Анимированный фон */
 .animated-bg {
     position: fixed;
     top: 0;
@@ -502,7 +476,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     100% { transform: translate(var(--x-end), var(--y-end)) scale(0) rotate(var(--rotate-end)); opacity: 0; }
 }
 
-/* Секция "О нас" */
 .about__wrapper {
     background-color: rgba(var(--card-bg-color-rgb), 0.9);
     padding: 30px;
@@ -543,7 +516,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     font-size: 1.1em;
 }
 
-/* Секция "Услуги" */
 .services__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -615,7 +587,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     margin-bottom: 15px;
 }
 
-/* Секция "Портфолио" */
 .portfolio__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
@@ -669,7 +640,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     margin: 0;
 }
 
-/* Секция "FAQ" */
 .faq__grid {
     max-width: 800px;
     margin: 0 auto;
@@ -720,7 +690,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     padding-bottom: 20px;
 }
 .faq__item.is-active .faq__answer {
-    max-height: 500px; /* Достаточно большая высота */
+    max-height: 500px;
     padding: 0 20px 20px 0;
     transition: max-height 0.4s ease-in, padding 0.4s ease-in;
 }
@@ -728,7 +698,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     transform: rotate(-135deg);
 }
 
-/* Секция "Оставить заявку" */
 .order-form {
     background-color: rgba(var(--card-bg-color-rgb), 0.9);
     max-width: 650px;
@@ -830,7 +799,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     color: var(--text-color);
 }
 
-/* Секция "Контакты" */
 .contacts__info {
     background-color: rgba(var(--card-bg-color-rgb), 0.9);
     text-align: center;
@@ -852,7 +820,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     color: var(--heading-color);
 }
 
-/* --- Подвал --- */
 .footer {
     text-align: center;
     padding: 20px 0;
@@ -889,8 +856,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     stroke: currentColor;
 }
 
-
-/* --- Модальные окна --- */
 .modal {
     position: fixed;
     top: 0;
@@ -939,7 +904,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
 .close-modal-btn:hover {
     color: var(--primary-color);
 }
-/* Лайтбокс изображений */
 .image-lightbox__content {
     max-width: 90vw;
     max-height: 90vh;
@@ -954,7 +918,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     margin-top: 15px;
     color: var(--heading-color);
 }
-/* Модальное окно успеха */
 .modal-icon {
     width: 60px;
     height: 60px;
@@ -973,7 +936,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     margin-bottom: 0;
 }
 
-/* --- Баннер cookie --- */
 .cookie-banner {
     position: fixed;
     bottom: -100%;
@@ -999,8 +961,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     font-size: 0.9em;
 }
 
-/* --- Адаптивность --- */
-/* Стили по-умолчанию (Mobile First) */
 .nav--desktop {
     display: none;
 }
@@ -1008,7 +968,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     display: block;
 }
 
-/* Планшеты и десктопы */
 @media (min-width: 769px) {
     .nav--desktop {
         display: flex;
@@ -1017,10 +976,9 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
         display: none;
     }
     .nav--mobile {
-        display: none !important; /* Гарантированно скрываем мобильную панель */
+        display: none !important;
     }
 }
-
 
 @media (max-width: 768px) {
     h1 { font-size: 2rem; }
@@ -1049,6 +1007,41 @@ html[data-theme="dark"] .theme-toggle__icon--moon { opacity: 1; transform: rotat
     }
 
     .footer__creator {
-        flex-wrap: wrap; /* Позволяет перенос на новую строку */
+        flex-wrap: wrap;
+    }
+}
+
+.footer__legal-links {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.footer__legal-links a {
+    color: var(--placeholder-color);
+    font-size: 0.9em;
+    text-decoration: none;
+}
+
+.footer__legal-links a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.footer__legal-separator {
+    color: var(--placeholder-color);
+    font-size: 0.9em;
+}
+
+@media (max-width: 480px) {
+    .footer__legal-separator {
+        display: none;
+    }
+    .footer__legal-links {
+        flex-direction: column;
+        gap: 5px;
     }
 }
